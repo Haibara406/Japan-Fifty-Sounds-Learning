@@ -1759,3 +1759,282 @@ body {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
+
+/* 测试面板样式 */
+.test-panel {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 380px;
+    height: 100vh;
+    background: var(--bg-primary);
+    border-left: 2px solid var(--primary-color);
+    box-shadow: var(--shadow-xl);
+    z-index: 1002;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+}
+
+.test-panel.active {
+    right: 0;
+}
+
+.test-panel-content {
+    padding: var(--spacing-lg);
+}
+
+.test-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.test-panel-header h3 {
+    margin: 0;
+    color: var(--danger-color);
+}
+
+.close-test-panel {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+}
+
+.close-test-panel:hover {
+    color: var(--danger-color);
+}
+
+.test-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.test-section h4 {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+    font-size: 1rem;
+}
+
+.test-btn {
+    background: var(--secondary-color);
+    color: var(--text-light);
+    border: none;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin: var(--spacing-xs);
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.test-btn:hover {
+    background: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.test-btn:active {
+    transform: translateY(0);
+}
+
+/* 测试版本样式 */
+.test-badge {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: var(--spacing-sm);
+    animation: pulse 2s infinite;
+}
+
+.test-mode-indicator {
+    color: #ff6b6b;
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.test-info {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.test-btn-inline {
+    background: #ff6b6b !important;
+    color: white !important;
+    font-size: 0.8rem !important;
+    padding: var(--spacing-xs) var(--spacing-sm) !important;
+}
+
+.test-btn-inline:hover {
+    background: #ee5a24 !important;
+}
+
+.test-btn-small {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.7rem;
+    cursor: pointer;
+    margin: 0 2px;
+    transition: all 0.3s ease;
+}
+
+.test-btn-small:hover {
+    background: #ee5a24;
+    transform: translateY(-1px);
+}
+
+.test-controls {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-left: var(--spacing-md);
+    align-items: center;
+}
+
+/* 测试面板增强样式 */
+.test-panel {
+    border-left: 3px solid #ff6b6b;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(255, 107, 107, 0.05) 100%);
+}
+
+.test-panel-header {
+    background: rgba(255, 107, 107, 0.1);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* 状态栏测试信息样式 */
+.user-stats {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+/* 测试版本特殊动画 */
+@keyframes testGlow {
+    0%, 100% { box-shadow: 0 0 5px rgba(255, 107, 107, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(255, 107, 107, 0.8); }
+}
+
+.test-btn-inline {
+    animation: testGlow 3s infinite;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .test-controls {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        margin-left: 0;
+        margin-top: var(--spacing-sm);
+    }
+
+    .test-mode-indicator {
+        display: block;
+        margin-top: var(--spacing-xs);
+    }
+
+    .user-stats {
+        justify-content: center;
+    }
+}
+
+/* 测试版本水印 */
+.test-watermark {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255, 107, 107, 0.9);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-xl);
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-lg);
+    animation: pulse 3s infinite;
+}
+
+.watermark-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.watermark-content i {
+    font-size: 1rem;
+}
+
+/* 版本信息按钮 */
+.version-info-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s ease;
+}
+
+.version-info-btn:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-xl);
+}
+
+.version-info-btn:active {
+    transform: scale(0.95);
+}
+
+/* 测试版本特殊效果 */
+@keyframes testPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
+
+.test-watermark {
+    animation: testPulse 4s infinite;
+}
+
+/* 隐藏滚动条但保持功能 */
+.test-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.test-panel::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+}
+
+.test-panel::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.test-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日本五十音学习网站</title>
+    <title>🧪 日本五十音学习网站 - 内部测试版 v1.0</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,8 +16,9 @@
         <header class="header">
             <div class="header-content">
                 <h1 class="logo">
-                    <i class="fas fa-torii-gate"></i>
-                    五十音学习
+                    <i class="fas fa-flask"></i>
+                    五十音学习 - 测试版
+                    <span class="test-badge">BETA</span>
                 </h1>
                 <nav class="nav-menu">
                     <button class="nav-btn active" data-mode="browse">
@@ -69,6 +70,18 @@
                     <i class="fas fa-percentage"></i>
                     <span>掌握度: <span id="mastery-rate">0%</span></span>
                 </div>
+                <div class="stat-item test-info">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>答题: <span id="test-questions">0</span>题</span>
+                </div>
+                <div class="stat-item test-info">
+                    <i class="fas fa-fire"></i>
+                    <span>连击: <span id="test-streak">0</span></span>
+                </div>
+                <div class="stat-item test-info">
+                    <i class="fas fa-trophy"></i>
+                    <span>成就: <span id="test-achievements">0/14</span></span>
+                </div>
                 <div class="stat-item" id="level-benefits" style="display: none;">
                     <i class="fas fa-gift"></i>
                     <span id="level-benefit-text">新功能解锁！</span>
@@ -79,6 +92,12 @@
                         积分说明
                     </button>
                 </div>
+                <div class="stat-item">
+                    <button class="info-btn" id="toggle-test-panel" style="background: #e74c3c;">
+                        <i class="fas fa-bug"></i>
+                        测试模式
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -87,7 +106,7 @@
             <!-- 浏览模式 -->
             <section id="browse-mode" class="mode-section active">
                 <div class="mode-header">
-                    <h2>五十音图表</h2>
+                    <h2>五十音图表 <span class="test-mode-indicator">🧪 测试模式</span></h2>
                     <div class="controls">
                         <button class="control-btn active" id="show-hiragana">
                             <i class="fas fa-h-square"></i>
@@ -96,6 +115,14 @@
                         <button class="control-btn" id="show-katakana">
                             <i class="fas fa-k"></i>
                             片假名
+                        </button>
+                        <button class="control-btn test-btn-inline" id="test-master-random">
+                            <i class="fas fa-magic"></i>
+                            随机掌握5个
+                        </button>
+                        <button class="control-btn test-btn-inline" id="test-clear-progress">
+                            <i class="fas fa-eraser"></i>
+                            清空进度
                         </button>
                     </div>
                 </div>
@@ -108,7 +135,7 @@
             <!-- 练习模式 -->
             <section id="practice-mode" class="mode-section">
                 <div class="mode-header">
-                    <h2>练习模式</h2>
+                    <h2>练习模式 <span class="test-mode-indicator">🧪 测试模式</span></h2>
                     <div class="practice-controls">
                         <select id="practice-type">
                             <option value="recognition">识别练习</option>
@@ -128,6 +155,11 @@
                             <option value="ra-row">ら行</option>
                             <option value="wa-row">わ行</option>
                         </select>
+                        <div class="test-controls">
+                            <button class="test-btn-small" id="test-auto-correct">自动答对</button>
+                            <button class="test-btn-small" id="test-auto-wrong">自动答错</button>
+                            <button class="test-btn-small" id="test-add-streak">+5连击</button>
+                        </div>
                     </div>
                 </div>
                 
@@ -157,12 +189,16 @@
             <!-- 测试模式 -->
             <section id="test-mode" class="mode-section">
                 <div class="mode-header">
-                    <h2>测试模式</h2>
+                    <h2>测试模式 <span class="test-mode-indicator">🧪 测试模式</span></h2>
                     <div class="test-info">
                         <span>题目: <span id="question-count">0/20</span></span>
                         <span>时间: <span id="test-timer">00:00</span></span>
                         <button class="start-test-btn" id="start-test">开始测试</button>
                         <button class="stop-test-btn" id="stop-test" style="display: none;">停止测试</button>
+                        <div class="test-controls">
+                            <button class="test-btn-small" id="test-perfect-score">模拟满分</button>
+                            <button class="test-btn-small" id="test-skip-timer">跳过计时</button>
+                        </div>
                     </div>
                 </div>
                 
@@ -182,7 +218,7 @@
             <!-- 记忆卡片模式 -->
             <section id="flashcard-mode" class="mode-section">
                 <div class="mode-header">
-                    <h2>记忆卡片</h2>
+                    <h2>记忆卡片 <span class="test-mode-indicator">🧪 测试模式</span></h2>
                     <div class="flashcard-controls">
                         <button class="control-btn" id="shuffle-cards">
                             <i class="fas fa-shuffle"></i>
@@ -236,7 +272,7 @@
             <!-- 学习进度 -->
             <section id="progress-mode" class="mode-section">
                 <div class="mode-header">
-                    <h2>学习进度</h2>
+                    <h2>学习进度 <span class="test-mode-indicator">🧪 测试模式</span></h2>
                     <div class="progress-explanation">
                         <button class="control-btn" id="show-progress-help">
                             <i class="fas fa-question-circle"></i>
@@ -352,7 +388,7 @@
             <!-- 成就页面 -->
             <section id="achievements-mode" class="mode-section">
                 <div class="mode-header">
-                    <h2>成就系统</h2>
+                    <h2>成就系统 <span class="test-mode-indicator">🧪 测试模式</span></h2>
                     <p>解锁成就，展示你的学习成果！</p>
                 </div>
                 <div class="achievements-content">
@@ -375,7 +411,7 @@
             <!-- 设置页面 -->
             <section id="settings-mode" class="mode-section">
                 <div class="mode-header">
-                    <h2>设置</h2>
+                    <h2>设置 <span class="test-mode-indicator">🧪 测试模式</span></h2>
                 </div>
                 
                 <div class="settings-content">
@@ -492,6 +528,74 @@
             </div>
         </div>
     </div>
+
+    <!-- 测试面板 -->
+    <div id="test-panel" class="test-panel" style="display: none;">
+        <div class="test-panel-content">
+            <div class="test-panel-header">
+                <h3>🐛 测试模式面板</h3>
+                <button class="close-test-panel" id="close-test-panel">&times;</button>
+            </div>
+            <div class="test-panel-body">
+                <div class="test-section">
+                    <h4>💰 积分与等级测试</h4>
+                    <button class="test-btn" id="add-points-100">+100积分</button>
+                    <button class="test-btn" id="add-points-500">+500积分</button>
+                    <button class="test-btn" id="add-points-1000">+1000积分</button>
+                    <button class="test-btn" id="reset-points">重置积分</button>
+                </div>
+
+                <div class="test-section">
+                    <h4>🏆 成就测试</h4>
+                    <button class="test-btn" id="unlock-first-step">解锁：初次尝试</button>
+                    <button class="test-btn" id="unlock-practice-master">解锁：练习达人</button>
+                    <button class="test-btn" id="unlock-accuracy-expert">解锁：精准射手</button>
+                    <button class="test-btn" id="unlock-hiragana-master">解锁：平假名大师</button>
+                    <button class="test-btn" id="unlock-level-achievements">解锁：等级成就</button>
+                    <button class="test-btn" id="unlock-all-achievements">解锁所有成就</button>
+                    <button class="test-btn" id="reset-achievements">重置成就</button>
+                </div>
+
+                <div class="test-section">
+                    <h4>📅 时间测试</h4>
+                    <button class="test-btn" id="add-study-time">+10小时学习时长</button>
+                    <button class="test-btn" id="add-consecutive-days">模拟连续7天学习</button>
+                    <button class="test-btn" id="add-long-streak">模拟连续30天学习</button>
+                    <button class="test-btn" id="reset-time-data">重置时间数据</button>
+                </div>
+
+                <div class="test-section">
+                    <h4>📊 统计测试</h4>
+                    <button class="test-btn" id="add-practice-stats">模拟100道练习</button>
+                    <button class="test-btn" id="add-perfect-tests">模拟3次满分测试</button>
+                    <button class="test-btn" id="add-max-streak">设置50连击</button>
+                    <button class="test-btn" id="master-all-hiragana">掌握所有平假名</button>
+                    <button class="test-btn" id="master-all-katakana">掌握所有片假名</button>
+                </div>
+
+                <div class="test-section">
+                    <h4>🔄 系统测试</h4>
+                    <button class="test-btn" id="trigger-level-up">触发升级检查</button>
+                    <button class="test-btn" id="trigger-achievement-check">触发成就检查</button>
+                    <button class="test-btn" id="show-test-notification">测试成就通知</button>
+                    <button class="test-btn" id="reset-all-data">重置所有数据</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 测试版本水印 -->
+    <div class="test-watermark">
+        <div class="watermark-content">
+            <i class="fas fa-flask"></i>
+            <span>内部测试版 v1.0</span>
+        </div>
+    </div>
+
+    <!-- 版本信息按钮 -->
+    <button class="version-info-btn" onclick="showTestVersionInfo()">
+        <i class="fas fa-info"></i>
+    </button>
 
     <script src="data.js"></script>
     <script src="script.js"></script>

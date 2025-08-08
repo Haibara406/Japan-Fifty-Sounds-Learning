@@ -1190,6 +1190,14 @@ function setupSettingsListeners() {
     // 积分说明
     document.getElementById('show-level-info').addEventListener('click', showLevelInfoModal);
 
+    // 测试面板
+    document.getElementById('toggle-test-panel').addEventListener('click', toggleTestPanel);
+    document.getElementById('close-test-panel').addEventListener('click', closeTestPanel);
+
+    // 测试功能事件监听器
+    setupTestListeners();
+    setupInlineTestListeners();
+
     // 弹窗关闭
     document.getElementById('close-intro').addEventListener('click', closeIntroModal);
     document.getElementById('close-level-info').addEventListener('click', closeLevelInfoModal);
@@ -1604,14 +1612,14 @@ const achievementSystem = {
         name: '练习达人',
         description: '完成100道练习题',
         icon: 'fas fa-dumbbell',
-        condition: () => userData.totalQuestions >= 100
+        condition: () => userData.totalQuestions >= 10 // 测试版：降低到10题
     },
     'accuracy_expert': {
         id: 'accuracy_expert',
         name: '精准射手',
         description: '达到90%以上准确率',
         icon: 'fas fa-bullseye',
-        condition: () => userData.accuracy >= 90 && userData.totalQuestions >= 20
+        condition: () => userData.accuracy >= 90 && userData.totalQuestions >= 5 // 测试版：降低到5题
     },
     'speed_demon': {
         id: 'speed_demon',
@@ -1645,42 +1653,42 @@ const achievementSystem = {
         name: '坚持不懈',
         description: '连续学习7天',
         icon: 'fas fa-calendar-check',
-        condition: () => getConsecutiveStudyDays() >= 7
+        condition: () => getConsecutiveStudyDays() >= 3 // 测试版：降低到3天
     },
     'time_master': {
         id: 'time_master',
         name: '时间管理大师',
         description: '累计学习10小时',
         icon: 'fas fa-clock',
-        condition: () => userData.studyTime >= 600 // 10小时 = 600分钟
+        condition: () => userData.studyTime >= 10 // 测试版：降低到10分钟
     },
     'perfectionist': {
         id: 'perfectionist',
         name: '完美主义者',
         description: '连续答对50题',
         icon: 'fas fa-gem',
-        condition: () => userData.maxStreak >= 50
+        condition: () => userData.maxStreak >= 5 // 测试版：降低到5题
     },
     'explorer': {
         id: 'explorer',
         name: '探索者',
         description: '尝试所有学习模式',
         icon: 'fas fa-compass',
-        condition: () => userData.modesUsed.size >= 5 // 浏览、练习、测试、记忆卡片、进度
+        condition: () => userData.modesUsed.size >= 3 // 测试版：降低到3个模式
     },
     'level_5': {
         id: 'level_5',
         name: '进步追踪者',
         description: '达到5级',
         icon: 'fas fa-star',
-        condition: () => userData.level >= 5
+        condition: () => userData.level >= 3 // 测试版：降低到3级
     },
     'level_10': {
         id: 'level_10',
         name: '五十音大师',
         description: '达到10级（最高级）',
         icon: 'fas fa-trophy',
-        condition: () => userData.level >= 10
+        condition: () => userData.level >= 5 // 测试版：降低到5级
     },
     'speed_learner': {
         id: 'speed_learner',
@@ -1763,6 +1771,11 @@ function updateUI() {
     // 更新用户状态
     document.getElementById('user-level').textContent = userData.level;
     document.getElementById('user-points').textContent = userData.points;
+
+    // 更新测试信息显示
+    document.getElementById('test-questions').textContent = userData.totalQuestions;
+    document.getElementById('test-streak').textContent = userData.maxStreak;
+    document.getElementById('test-achievements').textContent = `${userData.unlockedAchievements.size}/${Object.keys(achievementSystem).length}`;
 
     // 计算掌握度（包括平假名和片假名）
     const hiraganaData = getKanaData('hiragana').filter(item => item.difficulty < 4);
@@ -1946,6 +1959,473 @@ function showLevelInfoModal() {
 function closeLevelInfoModal() {
     document.getElementById('level-info-modal').style.display = 'none';
 }
+
+// ========== 测试功能 ==========
+
+// 切换测试面板
+function toggleTestPanel() {
+    const panel = document.getElementById('test-panel');
+    panel.classList.toggle('active');
+}
+
+// 关闭测试面板
+function closeTestPanel() {
+    const panel = document.getElementById('test-panel');
+    panel.classList.remove('active');
+}
+
+// 设置测试功能事件监听器
+function setupTestListeners() {
+    // 积分测试
+    document.getElementById('add-points-100').addEventListener('click', () => addTestPoints(100));
+    document.getElementById('add-points-500').addEventListener('click', () => addTestPoints(500));
+    document.getElementById('add-points-1000').addEventListener('click', () => addTestPoints(1000));
+    document.getElementById('reset-points').addEventListener('click', resetTestPoints);
+
+    // 成就测试
+    document.getElementById('unlock-first-step').addEventListener('click', () => unlockTestAchievement('first_step'));
+    document.getElementById('unlock-practice-master').addEventListener('click', () => unlockTestAchievement('practice_master'));
+    document.getElementById('unlock-accuracy-expert').addEventListener('click', () => unlockTestAchievement('accuracy_expert'));
+    document.getElementById('unlock-hiragana-master').addEventListener('click', () => unlockTestAchievement('hiragana_master'));
+    document.getElementById('unlock-level-achievements').addEventListener('click', unlockLevelAchievements);
+    document.getElementById('unlock-all-achievements').addEventListener('click', unlockAllAchievements);
+    document.getElementById('reset-achievements').addEventListener('click', resetTestAchievements);
+
+    // 时间测试
+    document.getElementById('add-study-time').addEventListener('click', addTestStudyTime);
+    document.getElementById('add-consecutive-days').addEventListener('click', () => addTestConsecutiveDays(7));
+    document.getElementById('add-long-streak').addEventListener('click', () => addTestConsecutiveDays(30));
+    document.getElementById('reset-time-data').addEventListener('click', resetTestTimeData);
+
+    // 统计测试
+    document.getElementById('add-practice-stats').addEventListener('click', addTestPracticeStats);
+    document.getElementById('add-perfect-tests').addEventListener('click', addTestPerfectTests);
+    document.getElementById('add-max-streak').addEventListener('click', addTestMaxStreak);
+    document.getElementById('master-all-hiragana').addEventListener('click', masterAllHiragana);
+    document.getElementById('master-all-katakana').addEventListener('click', masterAllKatakana);
+
+    // 系统测试
+    document.getElementById('trigger-level-up').addEventListener('click', triggerLevelUpCheck);
+    document.getElementById('trigger-achievement-check').addEventListener('click', triggerAchievementCheck);
+    document.getElementById('show-test-notification').addEventListener('click', showTestNotification);
+    document.getElementById('reset-all-data').addEventListener('click', resetAllTestData);
+}
+
+// 添加测试积分
+function addTestPoints(points) {
+    userData.points += points;
+    saveUserData();
+    updateUI();
+    alert(`已添加 ${points} 积分！当前积分：${userData.points}`);
+}
+
+// 重置积分
+function resetTestPoints() {
+    userData.points = 0;
+    userData.level = 1;
+    saveUserData();
+    updateUI();
+    alert('积分和等级已重置！');
+}
+
+// 解锁指定成就
+function unlockTestAchievement(achievementId) {
+    if (achievementSystem[achievementId]) {
+        userData.unlockedAchievements.add(achievementId);
+        saveUserData();
+        showAchievementNotification(achievementSystem[achievementId]);
+        updateUI();
+        alert(`已解锁成就：${achievementSystem[achievementId].name}`);
+    }
+}
+
+// 解锁等级成就
+function unlockLevelAchievements() {
+    userData.points = 1000; // 设置足够的积分
+    userData.level = 10;    // 设置最高等级
+    userData.unlockedAchievements.add('level_5');
+    userData.unlockedAchievements.add('level_10');
+    saveUserData();
+    updateUI();
+    alert('已解锁所有等级成就！');
+}
+
+// 解锁所有成就
+function unlockAllAchievements() {
+    Object.keys(achievementSystem).forEach(id => {
+        userData.unlockedAchievements.add(id);
+    });
+    saveUserData();
+    updateUI();
+    alert(`已解锁所有 ${Object.keys(achievementSystem).length} 个成就！`);
+}
+
+// 重置成就
+function resetTestAchievements() {
+    userData.unlockedAchievements.clear();
+    saveUserData();
+    updateUI();
+    alert('所有成就已重置！');
+}
+
+// 添加测试学习时长
+function addTestStudyTime() {
+    userData.studyTime += 600; // 添加10小时（600分钟）
+    saveUserData();
+    updateUI();
+    alert(`已添加10小时学习时长！总时长：${Math.round(userData.studyTime / 60)}小时`);
+}
+
+// 添加测试连续学习天数
+function addTestConsecutiveDays(days) {
+    const today = new Date();
+    userData.studyDates = [];
+
+    // 生成连续的学习日期
+    for (let i = days - 1; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        userData.studyDates.push(date.toDateString());
+    }
+
+    userData.studyDays = days;
+    userData.lastStudyDate = today.toDateString();
+    saveUserData();
+    updateUI();
+    alert(`已模拟连续学习${days}天！`);
+}
+
+// 重置时间数据
+function resetTestTimeData() {
+    userData.studyTime = 0;
+    userData.studyDays = 0;
+    userData.studyDates = [];
+    userData.lastStudyDate = null;
+    saveUserData();
+    updateUI();
+    alert('时间数据已重置！');
+}
+
+// 添加测试练习统计
+function addTestPracticeStats() {
+    userData.totalQuestions += 100;
+    userData.correctAnswers += 90; // 90%准确率
+    userData.accuracy = Math.round((userData.correctAnswers / userData.totalQuestions) * 100);
+    saveUserData();
+    updateUI();
+    alert('已添加100道练习题（90%准确率）！');
+}
+
+// 添加测试满分次数
+function addTestPerfectTests() {
+    userData.perfectTestCount += 3;
+    saveUserData();
+    updateUI();
+    alert('已添加3次满分测试记录！');
+}
+
+// 设置最大连击
+function addTestMaxStreak() {
+    userData.maxStreak = 50;
+    userData.currentStreak = 50;
+    saveUserData();
+    updateUI();
+    alert('已设置50连击记录！');
+}
+
+// 掌握所有平假名
+function masterAllHiragana() {
+    const hiraganaData = getKanaData('hiragana').filter(item => item.difficulty < 4);
+    hiraganaData.forEach(kana => {
+        userData.masteredKanas.add(kana.kana);
+        userData.learningKanas.delete(kana.kana);
+    });
+    saveUserData();
+    updateUI();
+    alert(`已掌握所有${hiraganaData.length}个平假名！`);
+}
+
+// 掌握所有片假名
+function masterAllKatakana() {
+    const katakanaData = getKanaData('katakana').filter(item => item.difficulty < 4);
+    katakanaData.forEach(kana => {
+        userData.masteredKanas.add(kana.kana);
+        userData.learningKanas.delete(kana.kana);
+    });
+    saveUserData();
+    updateUI();
+    alert(`已掌握所有${katakanaData.length}个片假名！`);
+}
+
+// 触发升级检查
+function triggerLevelUpCheck() {
+    const oldLevel = userData.level;
+    checkLevelUp();
+    updateUI();
+    alert(`等级检查完成！当前等级：${userData.level}（之前：${oldLevel}）`);
+}
+
+// 触发成就检查
+function triggerAchievementCheck() {
+    const oldCount = userData.unlockedAchievements.size;
+    checkAchievements();
+    updateUI();
+    const newCount = userData.unlockedAchievements.size;
+    alert(`成就检查完成！解锁成就：${newCount}/${Object.keys(achievementSystem).length}（新增：${newCount - oldCount}）`);
+}
+
+// 显示测试通知
+function showTestNotification() {
+    const testAchievement = {
+        name: '测试成就',
+        icon: 'fas fa-bug'
+    };
+    showAchievementNotification(testAchievement);
+    alert('测试通知已显示！');
+}
+
+// 重置所有数据
+function resetAllTestData() {
+    if (confirm('确定要重置所有测试数据吗？这将清除所有进度！')) {
+        userData = {
+            level: 1,
+            points: 0,
+            masteredKanas: new Set(),
+            learningKanas: new Set(),
+            practiceStats: {},
+            studyTime: 0,
+            studyDays: 0,
+            lastStudyDate: null,
+            accuracy: 0,
+            totalQuestions: 0,
+            correctAnswers: 0,
+            unlockedAchievements: new Set(),
+            hasSeenIntro: true, // 保持已看过介绍的状态
+            studyDates: [],
+            currentStreak: 0,
+            maxStreak: 0,
+            perfectTestCount: 0,
+            modesUsed: new Set()
+        };
+        saveUserData();
+        updateUI();
+        alert('所有数据已重置！');
+    }
+}
+
+// ========== 内联测试功能 ==========
+
+// 设置内联测试功能事件监听器
+function setupInlineTestListeners() {
+    // 浏览模式测试功能
+    document.getElementById('test-master-random').addEventListener('click', testMasterRandomKanas);
+    document.getElementById('test-clear-progress').addEventListener('click', testClearProgress);
+
+    // 练习模式测试功能
+    document.getElementById('test-auto-correct').addEventListener('click', testAutoCorrect);
+    document.getElementById('test-auto-wrong').addEventListener('click', testAutoWrong);
+    document.getElementById('test-add-streak').addEventListener('click', testAddStreak);
+
+    // 测试模式测试功能
+    document.getElementById('test-perfect-score').addEventListener('click', testPerfectScore);
+    document.getElementById('test-skip-timer').addEventListener('click', testSkipTimer);
+}
+
+// 随机掌握5个假名
+function testMasterRandomKanas() {
+    const currentData = getKanaData(currentScript).filter(item =>
+        item.difficulty < 4 && !userData.masteredKanas.has(item.kana)
+    );
+
+    if (currentData.length === 0) {
+        alert('当前文字类型的所有假名都已掌握！');
+        return;
+    }
+
+    const count = Math.min(5, currentData.length);
+    const randomKanas = currentData.sort(() => 0.5 - Math.random()).slice(0, count);
+
+    randomKanas.forEach(kana => {
+        userData.masteredKanas.add(kana.kana);
+        userData.learningKanas.delete(kana.kana);
+    });
+
+    userData.points += count * 10; // 每个掌握的假名+10分
+    saveUserData();
+    updateUI();
+    renderKanaGrid(); // 重新渲染表格显示变化
+
+    alert(`已随机掌握${count}个${currentScript === 'hiragana' ? '平假名' : '片假名'}！`);
+}
+
+// 清空当前文字类型的学习进度
+function testClearProgress() {
+    const currentData = getKanaData(currentScript).filter(item => item.difficulty < 4);
+    let clearedCount = 0;
+
+    currentData.forEach(kana => {
+        if (userData.masteredKanas.has(kana.kana) || userData.learningKanas.has(kana.kana)) {
+            userData.masteredKanas.delete(kana.kana);
+            userData.learningKanas.delete(kana.kana);
+            clearedCount++;
+        }
+    });
+
+    saveUserData();
+    updateUI();
+    renderKanaGrid();
+
+    alert(`已清空${clearedCount}个${currentScript === 'hiragana' ? '平假名' : '片假名'}的学习进度！`);
+}
+
+// 自动答对当前练习题
+function testAutoCorrect() {
+    if (currentMode !== 'practice' || !practiceData.currentKana) {
+        alert('请先开始练习！');
+        return;
+    }
+
+    // 模拟正确答案
+    const correctAnswer = practiceData.correctAnswer;
+
+    if (practiceData.practiceType === 'recognition' || practiceData.practiceType === 'listening') {
+        // 选择题模式：自动点击正确选项
+        const options = document.querySelectorAll('.option-btn');
+        const correctOption = Array.from(options).find(btn => btn.textContent === correctAnswer);
+        if (correctOption) {
+            correctOption.click();
+        }
+    } else {
+        // 输入题模式：自动填入正确答案
+        const input = document.getElementById('answer-input');
+        if (input) {
+            input.value = correctAnswer;
+            submitAnswer();
+        }
+    }
+}
+
+// 自动答错当前练习题
+function testAutoWrong() {
+    if (currentMode !== 'practice' || !practiceData.currentKana) {
+        alert('请先开始练习！');
+        return;
+    }
+
+    if (practiceData.practiceType === 'recognition' || practiceData.practiceType === 'listening') {
+        // 选择题模式：点击错误选项
+        const options = document.querySelectorAll('.option-btn');
+        const wrongOption = Array.from(options).find(btn => btn.textContent !== practiceData.correctAnswer);
+        if (wrongOption) {
+            wrongOption.click();
+        }
+    } else {
+        // 输入题模式：输入错误答案
+        const input = document.getElementById('answer-input');
+        if (input) {
+            input.value = 'wrong_answer';
+            submitAnswer();
+        }
+    }
+}
+
+// 增加5连击
+function testAddStreak() {
+    userData.currentStreak += 5;
+    userData.maxStreak = Math.max(userData.maxStreak, userData.currentStreak);
+    saveUserData();
+    updateUI();
+    alert(`已增加5连击！当前连击：${userData.currentStreak}`);
+}
+
+// 模拟满分测试
+function testPerfectScore() {
+    if (!testData.isActive) {
+        alert('请先开始测试！');
+        return;
+    }
+
+    // 直接结束测试并设置满分
+    testData.answers = [];
+    for (let i = 0; i < 20; i++) {
+        testData.answers.push({
+            question: 'test',
+            correctAnswer: 'test',
+            userAnswer: 'test',
+            isCorrect: true,
+            timeSpent: 1
+        });
+    }
+
+    testData.currentQuestion = 20;
+    finishTest();
+    alert('已模拟满分测试完成！');
+}
+
+// 跳过当前题目计时
+function testSkipTimer() {
+    if (!testData.isActive || !testData.currentTimer) {
+        alert('当前没有进行中的测试题目！');
+        return;
+    }
+
+    // 清除计时器并自动提交
+    clearInterval(testData.currentTimer);
+    testData.currentTimer = null;
+
+    // 自动选择正确答案
+    const question = testData.questions[testData.currentQuestion];
+    answerTestQuestion(question.romanji, null);
+
+    alert('已跳过计时并自动答对！');
+}
+
+// 显示测试版本信息
+function showTestVersionInfo() {
+    const info = `
+🧪 内部测试版本 v1.0
+
+📋 测试功能清单：
+✅ 积分与等级系统
+✅ 成就系统 (14个成就)
+✅ 学习进度追踪
+✅ 时间统计 (连续天数/累计时长)
+✅ 数据导出/导入
+✅ 响应式设计
+✅ 多模式学习
+
+🔧 测试工具：
+• 右上角测试面板 (完整功能测试)
+• 各模式内联测试按钮 (快速测试)
+• 降低成就门槛 (便于测试)
+• 实时数据显示
+
+⚠️ 注意事项：
+• 这是内部测试版本，包含调试功能
+• 成就门槛已降低便于测试
+• 所有数据保存在本地存储
+• 可随时重置测试数据
+
+🎯 测试重点：
+1. 成就解锁机制
+2. 积分等级提升
+3. 学习进度记录
+4. 数据导出完整性
+5. 界面响应性
+    `;
+
+    alert(info);
+}
+
+// 在页面加载完成后显示测试版本信息
+document.addEventListener('DOMContentLoaded', function() {
+    // 延迟显示，确保页面完全加载
+    setTimeout(() => {
+        if (confirm('🧪 欢迎使用内部测试版本！\n\n是否查看测试功能说明？')) {
+            showTestVersionInfo();
+        }
+    }, 1000);
+});
 
 // 页面可见性变化时暂停自动播放
 document.addEventListener('visibilitychange', function() {
