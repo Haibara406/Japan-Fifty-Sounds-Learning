@@ -40,6 +40,10 @@
                         <i class="fas fa-chart-line"></i>
                         学习进度
                     </button>
+                    <button class="nav-btn" data-mode="achievements">
+                        <i class="fas fa-trophy"></i>
+                        成就
+                    </button>
                     <button class="nav-btn" data-mode="settings">
                         <i class="fas fa-cog"></i>
                         设置
@@ -54,7 +58,7 @@
                 <div class="stat-item tooltip">
                     <i class="fas fa-star"></i>
                     <span>等级: <span id="user-level">1</span></span>
-                    <div class="tooltiptext">每100积分升1级<br>等级越高解锁更多功能</div>
+                    <div class="tooltiptext">每100积分升1级<br>展示你的学习成就</div>
                 </div>
                 <div class="stat-item tooltip">
                     <i class="fas fa-coins"></i>
@@ -68,6 +72,12 @@
                 <div class="stat-item" id="level-benefits" style="display: none;">
                     <i class="fas fa-gift"></i>
                     <span id="level-benefit-text">新功能解锁！</span>
+                </div>
+                <div class="stat-item">
+                    <button class="info-btn" id="show-level-info">
+                        <i class="fas fa-info-circle"></i>
+                        积分说明
+                    </button>
                 </div>
             </div>
         </div>
@@ -339,6 +349,29 @@
                 </div>
             </section>
 
+            <!-- 成就页面 -->
+            <section id="achievements-mode" class="mode-section">
+                <div class="mode-header">
+                    <h2>成就系统</h2>
+                    <p>解锁成就，展示你的学习成果！</p>
+                </div>
+                <div class="achievements-content">
+                    <div class="achievements-stats">
+                        <div class="achievement-stat">
+                            <span class="stat-number" id="unlocked-count">0</span>
+                            <span class="stat-label">已解锁</span>
+                        </div>
+                        <div class="achievement-stat">
+                            <span class="stat-number" id="total-achievements">14</span>
+                            <span class="stat-label">总成就</span>
+                        </div>
+                    </div>
+                    <div class="achievements-grid" id="achievements-grid">
+                        <!-- 成就卡片将在这里动态生成 -->
+                    </div>
+                </div>
+            </section>
+
             <!-- 设置页面 -->
             <section id="settings-mode" class="mode-section">
                 <div class="mode-header">
@@ -386,6 +419,80 @@
 
 
     
+    <!-- 网站介绍弹窗 -->
+    <div id="intro-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🌸 欢迎来到五十音学习网站！</h2>
+                <span class="close" id="close-intro">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="intro-section">
+                    <h3>🎯 学习模式</h3>
+                    <ul>
+                        <li><strong>浏览模式</strong>：点击假名卡片切换平假名/片假名</li>
+                        <li><strong>练习模式</strong>：识别、书写、听音三种练习类型</li>
+                        <li><strong>测试模式</strong>：20道限时题目，检验学习效果</li>
+                        <li><strong>记忆卡片</strong>：翻转卡片，标记难度</li>
+                        <li><strong>学习进度</strong>：查看详细的学习统计</li>
+                        <li><strong>成就系统</strong>：解锁成就，展示学习成果</li>
+                    </ul>
+                </div>
+                <div class="intro-section">
+                    <h3>🏆 积分与等级</h3>
+                    <ul>
+                        <li>练习答对：+5分</li>
+                        <li>掌握假名：+10分</li>
+                        <li>测试奖励：20-50分</li>
+                        <li>每100分升1级，获得新称号</li>
+                    </ul>
+                </div>
+                <div class="intro-section">
+                    <h3>📈 掌握机制</h3>
+                    <p>连续答对3次才算掌握，答错会重置进度。平假名和片假名分别计算。</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn" id="start-learning">开始学习之旅！</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 积分说明弹窗 -->
+    <div id="level-info-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏆 积分与等级系统</h2>
+                <span class="close" id="close-level-info">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="level-info-section">
+                    <h3>💰 积分获取方式</h3>
+                    <div class="points-list">
+                        <div class="point-item">
+                            <span class="point-action">练习答对</span>
+                            <span class="point-value">+5分</span>
+                        </div>
+                        <div class="point-item">
+                            <span class="point-action">掌握假名（连续答对3次）</span>
+                            <span class="point-value">+10分</span>
+                        </div>
+                        <div class="point-item">
+                            <span class="point-action">测试奖励（根据准确率）</span>
+                            <span class="point-value">20-50分</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="level-info-section">
+                    <h3>⭐ 等级称号</h3>
+                    <div class="levels-list" id="levels-list">
+                        <!-- 等级列表将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="data.js"></script>
     <script src="script.js"></script>
 </body>

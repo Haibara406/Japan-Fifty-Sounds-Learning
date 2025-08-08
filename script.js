@@ -18,7 +18,14 @@ let userData = {
     lastStudyDate: null,
     accuracy: 0,
     totalQuestions: 0,
-    correctAnswers: 0
+    correctAnswers: 0,
+    unlockedAchievements: new Set(), // 已解锁的成就
+    hasSeenIntro: false, // 是否已看过介绍
+    studyDates: [], // 学习日期记录，用于判断连续学习
+    currentStreak: 0, // 当前连续答对次数
+    maxStreak: 0, // 最大连续答对次数
+    perfectTestCount: 0, // 满分测试次数
+    modesUsed: new Set() // 使用过的学习模式
 };
 
 // 练习模式变量
@@ -62,6 +69,11 @@ function initializeApp() {
     initializeBrowseMode();
     updateUI();
 
+    // 检查是否需要显示介绍
+    if (!userData.hasSeenIntro) {
+        showIntroModal();
+    }
+
     // 记录学习时间
     setInterval(updateStudyTime, 60000); // 每分钟更新一次
 }
@@ -74,15 +86,50 @@ function loadUserData() {
         userData = { ...userData, ...parsed };
         userData.masteredKanas = new Set(parsed.masteredKanas || []);
         userData.learningKanas = new Set(parsed.learningKanas || []);
+        userData.unlockedAchievements = new Set(parsed.unlockedAchievements || []);
+        userData.modesUsed = new Set(parsed.modesUsed || []);
+        userData.studyDates = parsed.studyDates || [];
     }
-    
+
     // 检查是否是新的一天
     const today = new Date().toDateString();
     if (userData.lastStudyDate !== today) {
         userData.studyDays++;
         userData.lastStudyDate = today;
+
+        // 添加到学习日期记录
+        if (!userData.studyDates.includes(today)) {
+            userData.studyDates.push(today);
+            // 只保留最近90天的记录
+            if (userData.studyDates.length > 90) {
+                userData.studyDates = userData.studyDates.slice(-90);
+            }
+        }
+
         saveUserData();
     }
+}
+
+// 计算连续学习天数
+function getConsecutiveStudyDays() {
+    if (userData.studyDates.length === 0) return 0;
+
+    const dates = userData.studyDates.map(dateStr => new Date(dateStr)).sort((a, b) => b - a);
+    let consecutiveDays = 1;
+
+    for (let i = 1; i < dates.length; i++) {
+        const currentDate = dates[i];
+        const previousDate = dates[i - 1];
+        const dayDiff = Math.floor((previousDate - currentDate) / (1000 * 60 * 60 * 24));
+
+        if (dayDiff === 1) {
+            consecutiveDays++;
+        } else {
+            break;
+        }
+    }
+
+    return consecutiveDays;
 }
 
 // 保存用户数据
@@ -90,7 +137,9 @@ function saveUserData() {
     const dataToSave = {
         ...userData,
         masteredKanas: Array.from(userData.masteredKanas),
-        learningKanas: Array.from(userData.learningKanas)
+        learningKanas: Array.from(userData.learningKanas),
+        unlockedAchievements: Array.from(userData.unlockedAchievements),
+        modesUsed: Array.from(userData.modesUsed)
     };
     localStorage.setItem('japaneseKanaUserData', JSON.stringify(dataToSave));
 }
@@ -152,17 +201,21 @@ function setupEventListeners() {
 
 // 切换模式
 function switchMode(mode) {
+    // 记录使用的模式
+    userData.modesUsed.add(mode);
+    saveUserData();
+
     // 更新导航按钮状态
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
-    
+
     // 隐藏所有模式部分
     document.querySelectorAll('.mode-section').forEach(section => {
         section.classList.remove('active');
     });
-    
+
     // 显示当前模式
     document.getElementById(`${mode}-mode`).classList.add('active');
     currentMode = mode;
@@ -183,6 +236,9 @@ function switchMode(mode) {
             break;
         case 'progress':
             initializeProgressMode();
+            break;
+        case 'achievements':
+            initializeAchievementsMode();
             break;
         case 'settings':
             initializeSettingsMode();
@@ -524,6 +580,12 @@ function checkAnswer(answer) {
         stats.consecutiveCorrect++;
         practiceData.streak++;
 
+        // 更新连击记录
+        userData.currentStreak++;
+        if (userData.currentStreak > userData.maxStreak) {
+            userData.maxStreak = userData.currentStreak;
+        }
+
         // 判断是否掌握：连续答对3次
         if (stats.consecutiveCorrect >= 3) {
             userData.masteredKanas.add(currentKana);
@@ -540,6 +602,7 @@ function checkAnswer(answer) {
     } else {
         stats.consecutiveCorrect = 0; // 重置连续答对次数
         practiceData.streak = 0;
+        userData.currentStreak = 0; // 重置当前连击
 
         // 如果之前已掌握，降级为学习中
         if (userData.masteredKanas.has(currentKana)) {
@@ -803,7 +866,12 @@ function finishTest() {
     userData.totalQuestions += testData.answers.length;
     userData.correctAnswers += correctCount;
     userData.accuracy = Math.round((userData.correctAnswers / userData.totalQuestions) * 100);
-    
+
+    // 检查是否满分
+    if (accuracy === 100) {
+        userData.perfectTestCount++;
+    }
+
     // 更新等级
     const newLevel = Math.floor(userData.points / 100) + 1;
     if (newLevel > userData.level) {
@@ -1118,6 +1186,26 @@ function setupSettingsListeners() {
 
     // 进度说明
     document.getElementById('show-progress-help').addEventListener('click', toggleProgressHelp);
+
+    // 积分说明
+    document.getElementById('show-level-info').addEventListener('click', showLevelInfoModal);
+
+    // 弹窗关闭
+    document.getElementById('close-intro').addEventListener('click', closeIntroModal);
+    document.getElementById('close-level-info').addEventListener('click', closeLevelInfoModal);
+    document.getElementById('start-learning').addEventListener('click', closeIntroModal);
+
+    // 点击弹窗外部关闭
+    window.addEventListener('click', function(event) {
+        const introModal = document.getElementById('intro-modal');
+        const levelInfoModal = document.getElementById('level-info-modal');
+        if (event.target === introModal) {
+            closeIntroModal();
+        }
+        if (event.target === levelInfoModal) {
+            closeLevelInfoModal();
+        }
+    });
 }
 
 // 导出JSON数据
@@ -1126,10 +1214,13 @@ function exportJsonData() {
         userData: {
             ...userData,
             masteredKanas: Array.from(userData.masteredKanas),
-            learningKanas: Array.from(userData.learningKanas)
+            learningKanas: Array.from(userData.learningKanas),
+            unlockedAchievements: Array.from(userData.unlockedAchievements),
+            modesUsed: Array.from(userData.modesUsed)
         },
         settings: settings,
-        exportDate: new Date().toISOString()
+        exportDate: new Date().toISOString(),
+        version: '1.0' // 添加版本号用于兼容性
     };
 
     const jsonStr = JSON.stringify(jsonData, null, 2);
@@ -1189,6 +1280,17 @@ function generateLearningReport() {
         };
     });
     
+    // 成就统计
+    const unlockedAchievements = Array.from(userData.unlockedAchievements).map(id => {
+        const achievement = achievementSystem[id];
+        return {
+            id: achievement.id,
+            name: achievement.name,
+            description: achievement.description,
+            icon: achievement.icon
+        };
+    });
+
     return {
         exportDate: new Date().toLocaleString('zh-CN'),
         overall: {
@@ -1203,11 +1305,19 @@ function generateLearningReport() {
             masteredCount: masteredCount,
             learningCount: learningCount,
             unlearnedCount: unlearned,
-            masteryRate: Math.round((masteredCount / totalKanas) * 100)
+            masteryRate: Math.round((masteredCount / totalKanas) * 100),
+            consecutiveStudyDays: getConsecutiveStudyDays(),
+            maxStreak: userData.maxStreak,
+            perfectTestCount: userData.perfectTestCount
         },
         rowProgress: rowProgress,
         masteredKanas: Array.from(userData.masteredKanas),
-        learningKanas: Array.from(userData.learningKanas)
+        learningKanas: Array.from(userData.learningKanas),
+        achievements: {
+            unlocked: unlockedAchievements,
+            totalCount: Object.keys(achievementSystem).length,
+            unlockedCount: userData.unlockedAchievements.size
+        }
     };
 }
 
@@ -1340,9 +1450,37 @@ function generateHTMLReport(report) {
             </div>
         </div>
 
-        ${report.overall.masteryRate >= 80 ? '<div class="achievement">🎉 恭喜！你已经掌握了80%以上的五十音，继续加油！</div>' : ''}
-        ${report.overall.studyDays >= 7 ? '<div class="achievement">📅 坚持学习一周，养成良好习惯！</div>' : ''}
-        ${report.overall.accuracy >= 90 ? '<div class="achievement">🎯 答题准确率超过90%，学习效果很棒！</div>' : ''}
+        <div class="section">
+            <h2>🏆 成就系统</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">${report.achievements.unlockedCount}</div>
+                    <div class="stat-label">已解锁成就</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${report.achievements.totalCount}</div>
+                    <div class="stat-label">总成就数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${report.overall.consecutiveStudyDays}</div>
+                    <div class="stat-label">连续学习天数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${report.overall.maxStreak}</div>
+                    <div class="stat-label">最大连击数</div>
+                </div>
+            </div>
+
+            ${report.achievements.unlocked.length > 0 ? `
+                <h3>🎖️ 已解锁的成就</h3>
+                ${report.achievements.unlocked.map(achievement => `
+                    <div class="achievement">
+                        <i class="${achievement.icon}"></i>
+                        <strong>${achievement.name}</strong> - ${achievement.description}
+                    </div>
+                `).join('')}
+            ` : '<p>还没有解锁任何成就，继续努力学习吧！</p>'}
+        </div>
 
         <div class="footer">
             <p>📱 生成自：五十音学习网站</p>
@@ -1372,6 +1510,16 @@ function importData() {
                     userData = { ...userData, ...data.userData };
                     userData.masteredKanas = new Set(data.userData.masteredKanas || []);
                     userData.learningKanas = new Set(data.userData.learningKanas || []);
+                    userData.unlockedAchievements = new Set(data.userData.unlockedAchievements || []);
+                    userData.modesUsed = new Set(data.userData.modesUsed || []);
+                    userData.studyDates = data.userData.studyDates || [];
+
+                    // 确保新字段有默认值
+                    userData.currentStreak = userData.currentStreak || 0;
+                    userData.maxStreak = userData.maxStreak || 0;
+                    userData.perfectTestCount = userData.perfectTestCount || 0;
+                    userData.hasSeenIntro = userData.hasSeenIntro !== undefined ? userData.hasSeenIntro : false;
+
                     saveUserData();
                 }
                 
@@ -1430,16 +1578,138 @@ function updateStudyTime() {
 
 // 等级系统配置
 const levelSystem = {
-    1: { pointsRequired: 0, benefits: ['基础学习功能'] },
-    2: { pointsRequired: 100, benefits: ['解锁练习模式'] },
-    3: { pointsRequired: 300, benefits: ['解锁测试模式'] },
-    4: { pointsRequired: 600, benefits: ['解锁记忆卡片'] },
-    5: { pointsRequired: 1000, benefits: ['解锁进度统计'] },
-    6: { pointsRequired: 1500, benefits: ['解锁数据导出'] },
-    7: { pointsRequired: 2100, benefits: ['解锁高级统计'] },
-    8: { pointsRequired: 2800, benefits: ['解锁个性化设置'] },
-    9: { pointsRequired: 3600, benefits: ['解锁成就系统'] },
+    1: { pointsRequired: 0, benefits: ['开始学习之旅'] },
+    2: { pointsRequired: 100, benefits: ['练习新手'] },
+    3: { pointsRequired: 300, benefits: ['测试挑战者'] },
+    4: { pointsRequired: 600, benefits: ['记忆达人'] },
+    5: { pointsRequired: 1000, benefits: ['进步追踪者'] },
+    6: { pointsRequired: 1500, benefits: ['数据管理员'] },
+    7: { pointsRequired: 2100, benefits: ['学习分析师'] },
+    8: { pointsRequired: 2800, benefits: ['个性化专家'] },
+    9: { pointsRequired: 3600, benefits: ['成就收集家'] },
     10: { pointsRequired: 4500, benefits: ['五十音大师！'] }
+};
+
+// 成就系统配置
+const achievementSystem = {
+    'first_step': {
+        id: 'first_step',
+        name: '初次尝试',
+        description: '完成第一次练习',
+        icon: 'fas fa-baby',
+        condition: () => userData.totalQuestions >= 1
+    },
+    'practice_master': {
+        id: 'practice_master',
+        name: '练习达人',
+        description: '完成100道练习题',
+        icon: 'fas fa-dumbbell',
+        condition: () => userData.totalQuestions >= 100
+    },
+    'accuracy_expert': {
+        id: 'accuracy_expert',
+        name: '精准射手',
+        description: '达到90%以上准确率',
+        icon: 'fas fa-bullseye',
+        condition: () => userData.accuracy >= 90 && userData.totalQuestions >= 20
+    },
+    'speed_demon': {
+        id: 'speed_demon',
+        name: '速度恶魔',
+        description: '在测试中获得满分',
+        icon: 'fas fa-rocket',
+        condition: () => false // 需要在测试完成时检查
+    },
+    'hiragana_master': {
+        id: 'hiragana_master',
+        name: '平假名大师',
+        description: '掌握所有基础平假名',
+        icon: 'fas fa-graduation-cap',
+        condition: () => {
+            const hiraganaData = getKanaData('hiragana').filter(item => item.difficulty < 4);
+            return hiraganaData.every(kana => userData.masteredKanas.has(kana.kana));
+        }
+    },
+    'katakana_master': {
+        id: 'katakana_master',
+        name: '片假名大师',
+        description: '掌握所有基础片假名',
+        icon: 'fas fa-crown',
+        condition: () => {
+            const katakanaData = getKanaData('katakana').filter(item => item.difficulty < 4);
+            return katakanaData.every(kana => userData.masteredKanas.has(kana.kana));
+        }
+    },
+    'persistent_learner': {
+        id: 'persistent_learner',
+        name: '坚持不懈',
+        description: '连续学习7天',
+        icon: 'fas fa-calendar-check',
+        condition: () => getConsecutiveStudyDays() >= 7
+    },
+    'time_master': {
+        id: 'time_master',
+        name: '时间管理大师',
+        description: '累计学习10小时',
+        icon: 'fas fa-clock',
+        condition: () => userData.studyTime >= 600 // 10小时 = 600分钟
+    },
+    'perfectionist': {
+        id: 'perfectionist',
+        name: '完美主义者',
+        description: '连续答对50题',
+        icon: 'fas fa-gem',
+        condition: () => userData.maxStreak >= 50
+    },
+    'explorer': {
+        id: 'explorer',
+        name: '探索者',
+        description: '尝试所有学习模式',
+        icon: 'fas fa-compass',
+        condition: () => userData.modesUsed.size >= 5 // 浏览、练习、测试、记忆卡片、进度
+    },
+    'level_5': {
+        id: 'level_5',
+        name: '进步追踪者',
+        description: '达到5级',
+        icon: 'fas fa-star',
+        condition: () => userData.level >= 5
+    },
+    'level_10': {
+        id: 'level_10',
+        name: '五十音大师',
+        description: '达到10级（最高级）',
+        icon: 'fas fa-trophy',
+        condition: () => userData.level >= 10
+    },
+    'speed_learner': {
+        id: 'speed_learner',
+        name: '速度学习者',
+        description: '单日学习超过2小时',
+        icon: 'fas fa-tachometer-alt',
+        condition: () => false // 需要追踪单日学习时间
+    },
+    'perfect_test': {
+        id: 'perfect_test',
+        name: '测试专家',
+        description: '获得3次满分测试',
+        icon: 'fas fa-medal',
+        condition: () => userData.perfectTestCount >= 3
+    },
+    'dedication': {
+        id: 'dedication',
+        name: '学习狂人',
+        description: '连续学习30天',
+        icon: 'fas fa-fire',
+        condition: () => getConsecutiveStudyDays() >= 30
+    },
+    'marathon': {
+        id: 'marathon',
+        name: '学习马拉松',
+        description: '累计学习50小时',
+        icon: 'fas fa-running',
+        condition: () => userData.studyTime >= 3000 // 50小时 = 3000分钟
+    }
 };
 
 // 检查等级提升
@@ -1487,6 +1757,9 @@ function updateUI() {
     // 检查等级提升
     checkLevelUp();
 
+    // 检查成就解锁
+    checkAchievements();
+
     // 更新用户状态
     document.getElementById('user-level').textContent = userData.level;
     document.getElementById('user-points').textContent = userData.points;
@@ -1517,6 +1790,11 @@ function updateUI() {
     if (currentMode === 'progress') {
         updateProgressDisplay();
         updateRowProgress();
+    }
+
+    // 更新成就页面
+    if (currentMode === 'achievements') {
+        renderAchievements();
     }
 }
 
@@ -1549,6 +1827,125 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
+
+// 检查成就解锁
+function checkAchievements() {
+    let newAchievements = [];
+
+    Object.values(achievementSystem).forEach(achievement => {
+        if (!userData.unlockedAchievements.has(achievement.id) && achievement.condition()) {
+            userData.unlockedAchievements.add(achievement.id);
+            newAchievements.push(achievement);
+        }
+    });
+
+    // 显示新解锁的成就
+    newAchievements.forEach(achievement => {
+        showAchievementNotification(achievement);
+    });
+
+    if (newAchievements.length > 0) {
+        saveUserData();
+    }
+}
+
+// 显示成就解锁通知
+function showAchievementNotification(achievement) {
+    const notification = document.createElement('div');
+    notification.className = 'achievement-notification';
+    notification.innerHTML = `
+        <div class="achievement-notification-content">
+            <i class="${achievement.icon}"></i>
+            <div>
+                <div class="achievement-notification-title">成就解锁！</div>
+                <div class="achievement-notification-name">${achievement.name}</div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    // 3秒后移除通知
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// 初始化成就模式
+function initializeAchievementsMode() {
+    renderAchievements();
+}
+
+// 渲染成就列表
+function renderAchievements() {
+    const grid = document.getElementById('achievements-grid');
+    grid.innerHTML = '';
+
+    const unlockedCount = userData.unlockedAchievements.size;
+    const totalCount = Object.keys(achievementSystem).length;
+
+    document.getElementById('unlocked-count').textContent = unlockedCount;
+    document.getElementById('total-achievements').textContent = totalCount;
+
+    Object.values(achievementSystem).forEach(achievement => {
+        const isUnlocked = userData.unlockedAchievements.has(achievement.id);
+
+        const card = document.createElement('div');
+        card.className = `achievement-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+
+        card.innerHTML = `
+            <div class="achievement-icon">
+                <i class="${achievement.icon}"></i>
+            </div>
+            <div class="achievement-name">
+                ${isUnlocked ? achievement.name : '???'}
+            </div>
+            <div class="achievement-description">
+                ${isUnlocked ? achievement.description : '暂未解锁此成就'}
+            </div>
+            ${isUnlocked ? '<div class="achievement-unlock-badge">已解锁</div>' : ''}
+        `;
+
+        grid.appendChild(card);
+    });
+}
+
+// 显示介绍弹窗
+function showIntroModal() {
+    document.getElementById('intro-modal').style.display = 'block';
+}
+
+// 关闭介绍弹窗
+function closeIntroModal() {
+    document.getElementById('intro-modal').style.display = 'none';
+    userData.hasSeenIntro = true;
+    saveUserData();
+}
+
+// 显示积分说明弹窗
+function showLevelInfoModal() {
+    const modal = document.getElementById('level-info-modal');
+    const levelsList = document.getElementById('levels-list');
+
+    // 生成等级列表
+    levelsList.innerHTML = '';
+    Object.entries(levelSystem).forEach(([level, data]) => {
+        const item = document.createElement('div');
+        item.className = `level-item ${userData.level == level ? 'current' : ''}`;
+        item.innerHTML = `
+            <span class="level-name">Lv.${level} ${data.benefits[0]}</span>
+            <span class="level-points">${data.pointsRequired}分</span>
+        `;
+        levelsList.appendChild(item);
+    });
+
+    modal.style.display = 'block';
+}
+
+// 关闭积分说明弹窗
+function closeLevelInfoModal() {
+    document.getElementById('level-info-modal').style.display = 'none';
+}
 
 // 页面可见性变化时暂停自动播放
 document.addEventListener('visibilitychange', function() {
