@@ -1,141 +1,285 @@
-# 🌸 日本五十音学习网站
+# 🌸 Japanese Hiragana & Katakana Learning Platform
 
-一个功能完整、交互友好的日语五十音学习平台，帮助初学者系统掌握平假名和片假名。
+<div align="center">
 
-## ✨ 主要特性
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-blue?style=for-the-badge&logo=github-pages)](https://haibara406.github.io/Japan-Fifty-Sounds-Learning)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Language](https://img.shields.io/badge/Language-JavaScript-yellow?style=for-the-badge&logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
-### 📚 多模式学习
-- **浏览模式**：交互式五十音表，支持平假名/片假名切换
-- **练习模式**：识别练习、书写练习、听音练习三种类型
-- **测试模式**：限时测试，实时反馈，详细成绩报告
-- **记忆卡片**：翻转卡片设计，支持难度标记和自动播放
-- **学习进度**：可视化进度追踪，详细统计分析
+*A comprehensive, interactive web application for learning Japanese Hiragana and Katakana characters*
 
-### 🎯 智能学习系统
-- **科学掌握判定**：连续答对3次才算掌握，答错会重置进度
-- **分级学习状态**：未学习(灰色) → 学习中(黄色) → 已掌握(绿色)
-- **平假名片假名分别统计**：独立追踪两种文字的学习进度
-- **个性化练习**：根据掌握情况智能推荐练习内容
+[🇨🇳 中文](README_CN.md) | [🇺🇸 English](README.md) | [🇯🇵 日本語](README_JP.md)
 
-### 🏆 激励机制
-- **等级系统**：10个等级，每100积分升级，展示学习成就
-- **积分奖励**：练习答对+5分，掌握假名+10分，测试最高50分
-- **成就通知**：升级时有动画提示和称号获得
-- **进度可视化**：直观的进度条和统计图表
+</div>
 
-### 💾 数据管理
-- **本地存储**：学习进度自动保存到浏览器
-- **数据导出**：支持JSON格式数据备份和HTML学习报告
-- **数据导入**：可恢复之前的学习进度
-- **学习报告**：详细的HTML格式学习分析报告
+## 🎯 Overview
 
-## 🎮 使用指南
+This is a modern, feature-rich web application designed to help beginners systematically master Japanese Hiragana and Katakana characters. The platform offers multiple learning modes, intelligent progress tracking, and gamification elements to make learning engaging and effective.
 
-### 浏览模式
-- 点击五十音表中的任意假名卡片可切换显示平假名/片假名
-- 使用右上角按钮可将所有卡片切换到指定文字类型
-- 卡片颜色表示学习状态：灰色(未学习)、黄色(学习中)、绿色(已掌握)
+**🌐 Live Demo**: [https://haibara406.github.io/Japan-Fifty-Sounds-Learning](https://haibara406.github.io/Japan-Fifty-Sounds-Learning)
 
-### 练习模式
-- **识别练习**：看假名选罗马音
-- **书写练习**：看罗马音输入假名
-- **听音练习**：看假名选罗马音(无音频)
-- 支持按行练习或全部五十音练习
-- 连续答对3次即可掌握该假名
+## ✨ Key Features
 
-### 测试模式
-- 20道限时题目，每题10秒
-- 选择答案后立即显示反馈，3秒后进入下一题
-- 可随时停止测试
-- 测试结束显示详细成绩和积分奖励
+### 📚 Multiple Learning Modes
+- **Browse Mode**: Interactive 50-sound chart with Hiragana/Katakana switching
+- **Practice Mode**: Recognition, writing, and listening exercises
+- **Test Mode**: Timed quizzes with instant feedback and detailed reports
+- **Flashcard Mode**: Flip-card design with difficulty marking
+- **Progress Tracking**: Visual progress monitoring with detailed analytics
 
-### 记忆卡片
-- 点击卡片翻转查看罗马音和含义
-- 标记"简单"直接掌握，标记"困难"需要更多练习
-- 支持洗牌和自动播放功能
-- 键盘快捷键：左右箭头导航，空格键翻转
+### 🎯 Intelligent Learning System
+- **Scientific Mastery Criteria**: Requires 3 consecutive correct answers to master a character
+- **Tiered Learning States**: Unlearned (gray) → Learning (yellow) → Mastered (green)
+- **Separate Tracking**: Independent progress tracking for Hiragana and Katakana
+- **Personalized Practice**: Smart content recommendation based on mastery level
 
-### 学习进度
-- 查看整体掌握度和各行学习情况
-- 平假名和片假名分别显示进度
-- 详细的学习统计：天数、时长、准确率等
-- 点击"进度说明"了解详细的记录机制
+### 🏆 Gamification & Motivation
+- **Level System**: 10 levels with 100 points per level advancement
+- **Point Rewards**: +5 for correct answers, +10 for mastery, up to 50 for tests
+- **Achievement System**: 14 unlockable achievements with animated notifications
+- **Visual Progress**: Intuitive progress bars and statistical charts
 
-## 🎨 界面特色
+### 💾 Data Management
+- **Local Storage**: Automatic progress saving to browser
+- **Data Export**: JSON backup and HTML learning reports
+- **Data Import**: Restore previous learning progress
+- **Detailed Reports**: Comprehensive HTML-formatted learning analytics
 
-- **现代化设计**：简洁美观的Material Design风格
-- **响应式布局**：完美适配桌面和移动设备
-- **流畅动画**：卡片翻转、等级升级等精美动画效果
-- **直观反馈**：所有操作都有清晰的视觉反馈
-- **深色主题支持**：自动适配系统主题偏好
+## 🎮 User Guide
 
-## 📊 学习进度记录机制
+### Browse Mode
+- Click any character card to toggle between Hiragana/Katakana display
+- Use top-right buttons to switch all cards to specific script type
+- Card colors indicate learning status: Gray (unlearned), Yellow (learning), Green (mastered)
 
-### 掌握度计算
-- **未学习**：从未接触过的假名
-- **学习中**：点击浏览模式中的假名卡片，或在练习中答对1-2次
-- **已掌握**：在练习模式中连续答对3次，或在记忆卡片中标记为"简单"
-- **重要**：平假名和片假名分别计算，需要都掌握才算完全掌握该音
+### Practice Mode
+- **Recognition**: View character, select romanization
+- **Writing**: View romanization, input character
+- **Listening**: View character, select romanization (no audio)
+- Support for row-specific or full 50-sound practice
+- Master characters by answering correctly 3 times consecutively
 
-### 积分与等级
-- 练习答对：+5分
-- 连续答对3次（掌握）：+10分
-- 测试奖励：根据准确率获得20-50分
-- 等级提升：每100分升1级，获得新称号
+### Test Mode
+- 20 timed questions, 10 seconds per question
+- Immediate feedback after selection, 3-second delay before next question
+- Stop test anytime
+- Detailed results and point rewards upon completion
 
-### 学习统计
-- **学习天数**：每天首次使用时自动记录
-- **学习时长**：页面活跃时间，每分钟自动记录
-- **准确率**：总正确答题数 ÷ 总答题数 × 100%
+### Flashcard Mode
+- Click cards to flip and view romanization
+- Mark as "easy" for instant mastery or "difficult" for more practice
+- Shuffle and auto-play functionality
+- Keyboard shortcuts: Arrow keys for navigation, Spacebar to flip
 
-## 🛠️ 技术栈
+### Progress Tracking
+- View overall mastery and row-specific progress
+- Separate progress display for Hiragana and Katakana
+- Detailed statistics: study days, time spent, accuracy rate
+- Click "Progress Guide" for detailed recording mechanism
 
-- **前端**：原生HTML5 + CSS3 + JavaScript
-- **样式**：CSS Grid + Flexbox，CSS变量主题系统
-- **字体**：Google Fonts (Noto Sans JP + Noto Sans SC)
-- **图标**：Font Awesome 6.0
-- **存储**：localStorage本地存储
-- **动画**：CSS Keyframes动画
+## 🎨 Design Features
 
-## 📱 浏览器兼容性
+- **Modern UI**: Clean, beautiful Material Design aesthetic
+- **Responsive Layout**: Perfect adaptation for desktop and mobile devices
+- **Smooth Animations**: Card flips, level-ups, and other polished effects
+- **Intuitive Feedback**: Clear visual feedback for all interactions
+- **Theme Support**: Automatic system theme preference adaptation
+
+## 📊 Progress Tracking System
+
+### Mastery Calculation
+- **Unlearned**: Characters never encountered
+- **Learning**: Clicked in browse mode or answered correctly 1-2 times
+- **Mastered**: 3 consecutive correct answers or marked as "easy" in flashcards
+- **Important**: Hiragana and Katakana calculated separately
+
+### Points & Levels
+- Practice correct answer: +5 points
+- Character mastery (3 consecutive): +10 points
+- Test rewards: 20-50 points based on accuracy
+- Level advancement: Every 100 points, earn new title
+
+### Learning Statistics
+- **Study Days**: Automatically recorded on first daily use
+- **Study Time**: Active page time, recorded every minute
+- **Accuracy Rate**: Total correct answers ÷ Total questions × 100%
+
+## 🛠️ Technology Stack
+
+- **Frontend**: Vanilla HTML5 + CSS3 + JavaScript
+- **Styling**: CSS Grid + Flexbox, CSS custom properties theme system
+- **Fonts**: Google Fonts (Noto Sans JP + Noto Sans SC)
+- **Icons**: Font Awesome 6.0
+- **Storage**: localStorage for data persistence
+- **Animations**: CSS Keyframes animations
+
+## 📱 Browser Compatibility
 
 - Chrome 60+
 - Firefox 55+
 - Safari 12+
 - Edge 79+
 
-## 🎯 学习建议
+## 🎯 Learning Recommendations
 
-1. **从浏览模式开始**：熟悉五十音的基本形状和读音
-2. **循序渐进练习**：先掌握あ行，再逐行学习
-3. **平假名优先**：建议先掌握平假名，再学习片假名
-4. **定期测试**：使用测试模式检验学习效果
-5. **坚持复习**：使用记忆卡片模式巩固已学内容
+1. **Start with Browse Mode**: Familiarize yourself with character shapes and sounds
+2. **Progressive Practice**: Master あ-row first, then proceed row by row
+3. **Hiragana First**: Recommended to master Hiragana before Katakana
+4. **Regular Testing**: Use test mode to verify learning effectiveness
+5. **Consistent Review**: Use flashcard mode to reinforce learned content
 
-## 📈 学习路径推荐
+## 📈 Recommended Learning Path
 
-### 初学者 (0-2级)
-- 浏览模式熟悉假名形状
-- 从あ行开始练习识别
+### Beginner (Levels 0-2)
+- Browse mode to familiarize with character shapes
+- Start with あ-row recognition practice
 
-### 进阶学习 (3-5级)
-- 完成所有平假名的识别练习
-- 开始书写练习
-- 定期进行测试
+### Intermediate (Levels 3-5)
+- Complete all Hiragana recognition exercises
+- Begin writing practice
+- Regular testing
 
-### 熟练掌握 (6-10级)
-- 学习片假名
-- 混合练习平假名和片假名
-- 追求更高的准确率和速度
+### Advanced (Levels 6-10)
+- Learn Katakana
+- Mixed Hiragana and Katakana practice
+- Pursue higher accuracy and speed
 
-## 🤝 贡献
+## 🏆 Achievement System
 
-欢迎提交Issue和Pull Request来改进这个项目！
+Unlock 14 different achievements including:
+- **First Step**: Complete first practice
+- **Practice Master**: Complete 100 practice questions
+- **Accuracy Expert**: Achieve 90%+ accuracy
+- **Hiragana/Katakana Master**: Master all basic characters
+- **Persistent Learner**: Study for 7 consecutive days
+- **Level Achievements**: Reach specific levels
+- And more...
 
-## 📄 许可证
+## 🚀 Getting Started
 
-MIT License
+Simply visit the live demo to start learning immediately:
+
+**🌐 [Launch Application](https://haibara406.github.io/Japan-Fifty-Sounds-Learning)**
+
+No installation required - the application runs entirely in your browser with all data stored locally.
+
+## 📸 Screenshots
+
+### Browse Mode - Interactive 50-Sound Chart
+The main learning interface with clickable character cards that switch between Hiragana and Katakana.
+
+### Practice Mode - Multiple Exercise Types
+Comprehensive practice system with recognition, writing, and listening exercises.
+
+### Achievement System - Gamified Learning
+Unlock achievements and track your progress with detailed statistics.
+
+## 🔧 Features in Detail
+
+### Learning Modes
+| Mode | Description | Key Features |
+|------|-------------|--------------|
+| **Browse** | Interactive character chart | Click to switch scripts, visual progress indicators |
+| **Practice** | Structured exercises | 3 types of practice, adaptive difficulty |
+| **Test** | Timed assessments | 20 questions, instant feedback, scoring |
+| **Flashcard** | Memory reinforcement | Flip cards, difficulty marking, auto-play |
+| **Progress** | Analytics dashboard | Detailed statistics, export capabilities |
+
+### Gamification Elements
+- **14 Achievements** with animated unlock notifications
+- **10-Level System** with meaningful progression
+- **Point System** rewarding consistent practice
+- **Streak Tracking** for consecutive correct answers
+- **Time Tracking** for study sessions and consecutive days
+
+## 📊 Learning Analytics
+
+The application provides comprehensive learning analytics:
+
+- **Mastery Tracking**: Separate progress for Hiragana and Katakana
+- **Performance Metrics**: Accuracy rates, response times, improvement trends
+- **Study Habits**: Daily usage patterns, session lengths, consistency metrics
+- **Export Options**: JSON data backup and HTML progress reports
+
+## 🎯 Educational Approach
+
+### Spaced Repetition
+Characters are presented based on your mastery level, ensuring optimal review timing.
+
+### Progressive Difficulty
+Start with basic recognition and advance to complex mixed-script exercises.
+
+### Immediate Feedback
+Every interaction provides instant visual and textual feedback to reinforce learning.
+
+### Adaptive Learning
+The system adjusts content difficulty based on your performance and progress.
+
+## 🌐 Accessibility & Internationalization
+
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- **Keyboard Navigation**: Full keyboard support for accessibility
+- **Multi-language Support**: Interface available in Chinese, English, and Japanese
+- **Theme Adaptation**: Automatic dark/light mode based on system preferences
+
+## 🔒 Privacy & Data
+
+- **Local Storage Only**: All data remains on your device
+- **No Registration Required**: Start learning immediately without accounts
+- **Export/Import**: Full control over your learning data
+- **Offline Capable**: Core functionality works without internet connection
+
+## 🤝 Contributing
+
+We welcome contributions to improve this educational platform!
+
+### Ways to Contribute
+- 🐛 **Bug Reports**: Found an issue? Please report it
+- 💡 **Feature Requests**: Have ideas for improvements?
+- 🌍 **Translations**: Help make the app accessible to more learners
+- 📚 **Educational Content**: Suggest learning methodology improvements
+- 🎨 **UI/UX**: Design and usability enhancements
+
+### Development
+This project uses vanilla web technologies for maximum compatibility and performance:
+- No build process required
+- Direct file editing for quick iterations
+- Modern JavaScript features with broad browser support
+
+## 📈 Project Stats
+
+- **14 Achievements** to unlock
+- **92 Characters** to master (46 Hiragana + 46 Katakana)
+- **5 Learning Modes** for comprehensive practice
+- **3 Language Interfaces** (Chinese, English, Japanese)
+- **100% Client-side** - no server dependencies
+
+## 🙏 Acknowledgments
+
+- **Font Awesome** for beautiful icons
+- **Google Fonts** for Japanese typography support
+- **MDN Web Docs** for web standards reference
+- **Japanese Language Community** for educational insights
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+If you encounter any issues or have questions:
+- 📧 Open an issue on GitHub
+- 🌟 Star the repository if you find it helpful
+- 🔄 Share with other Japanese language learners
 
 ---
 
-**开始你的日语学习之旅吧！** 🚀
+<div align="center">
+
+**Ready to master Japanese characters?**
+
+[![Start Learning](https://img.shields.io/badge/🚀%20Start%20Learning-Visit%20App-success?style=for-the-badge)](https://haibara406.github.io/Japan-Fifty-Sounds-Learning)
+
+*Join thousands of learners mastering Hiragana and Katakana!*
+
+</div>
