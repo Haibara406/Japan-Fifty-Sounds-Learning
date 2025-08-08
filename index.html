@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本五十音学习网站</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">
+                    <i class="fas fa-torii-gate"></i>
+                    五十音学习
+                </h1>
+                <nav class="nav-menu">
+                    <button class="nav-btn active" data-mode="browse">
+                        <i class="fas fa-table"></i>
+                        浏览模式
+                    </button>
+                    <button class="nav-btn" data-mode="practice">
+                        <i class="fas fa-dumbbell"></i>
+                        练习模式
+                    </button>
+                    <button class="nav-btn" data-mode="test">
+                        <i class="fas fa-clipboard-check"></i>
+                        测试模式
+                    </button>
+                    <button class="nav-btn" data-mode="flashcard">
+                        <i class="fas fa-clone"></i>
+                        记忆卡片
+                    </button>
+                    <button class="nav-btn" data-mode="progress">
+                        <i class="fas fa-chart-line"></i>
+                        学习进度
+                    </button>
+                    <button class="nav-btn" data-mode="settings">
+                        <i class="fas fa-cog"></i>
+                        设置
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- 用户状态栏 -->
+        <div class="status-bar">
+            <div class="user-stats">
+                <div class="stat-item tooltip">
+                    <i class="fas fa-star"></i>
+                    <span>等级: <span id="user-level">1</span></span>
+                    <div class="tooltiptext">每100积分升1级<br>等级越高解锁更多功能</div>
+                </div>
+                <div class="stat-item tooltip">
+                    <i class="fas fa-coins"></i>
+                    <span>积分: <span id="user-points">0</span></span>
+                    <div class="tooltiptext">练习答对+5分<br>掌握假名+10分<br>测试奖励最高50分</div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-percentage"></i>
+                    <span>掌握度: <span id="mastery-rate">0%</span></span>
+                </div>
+                <div class="stat-item" id="level-benefits" style="display: none;">
+                    <i class="fas fa-gift"></i>
+                    <span id="level-benefit-text">新功能解锁！</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 浏览模式 -->
+            <section id="browse-mode" class="mode-section active">
+                <div class="mode-header">
+                    <h2>五十音图表</h2>
+                    <div class="controls">
+                        <button class="control-btn active" id="show-hiragana">
+                            <i class="fas fa-h-square"></i>
+                            平假名
+                        </button>
+                        <button class="control-btn" id="show-katakana">
+                            <i class="fas fa-k"></i>
+                            片假名
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="kana-grid" id="kana-grid">
+                    <!-- 五十音表格将通过JavaScript生成 -->
+                </div>
+            </section>
+
+            <!-- 练习模式 -->
+            <section id="practice-mode" class="mode-section">
+                <div class="mode-header">
+                    <h2>练习模式</h2>
+                    <div class="practice-controls">
+                        <select id="practice-type">
+                            <option value="recognition">识别练习</option>
+                            <option value="writing">书写练习</option>
+                            <option value="listening">听音练习</option>
+                        </select>
+                        <select id="practice-range">
+                            <option value="all">全部五十音</option>
+                            <option value="a-row">あ行</option>
+                            <option value="ka-row">か行</option>
+                            <option value="sa-row">さ行</option>
+                            <option value="ta-row">た行</option>
+                            <option value="na-row">な行</option>
+                            <option value="ha-row">は行</option>
+                            <option value="ma-row">ま行</option>
+                            <option value="ya-row">や行</option>
+                            <option value="ra-row">ら行</option>
+                            <option value="wa-row">わ行</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="practice-content">
+                    <div class="practice-card">
+                        <div class="question-area">
+                            <div class="kana-display" id="practice-kana">あ</div>
+                        </div>
+                        <div class="answer-area">
+                            <div class="options" id="practice-options">
+                                <!-- 选项将通过JavaScript生成 -->
+                            </div>
+                            <div class="input-area" id="practice-input" style="display: none;">
+                                <input type="text" placeholder="请输入答案..." id="answer-input">
+                                <button class="submit-btn" id="submit-answer">提交</button>
+                            </div>
+                        </div>
+                        <div class="feedback" id="practice-feedback"></div>
+                        <div class="practice-stats">
+                            <span>正确率: <span id="accuracy-rate">0%</span></span>
+                            <span>连续正确: <span id="streak">0</span></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 测试模式 -->
+            <section id="test-mode" class="mode-section">
+                <div class="mode-header">
+                    <h2>测试模式</h2>
+                    <div class="test-info">
+                        <span>题目: <span id="question-count">0/20</span></span>
+                        <span>时间: <span id="test-timer">00:00</span></span>
+                        <button class="start-test-btn" id="start-test">开始测试</button>
+                        <button class="stop-test-btn" id="stop-test" style="display: none;">停止测试</button>
+                    </div>
+                </div>
+                
+                <div class="test-content" id="test-content">
+                    <div class="test-instructions">
+                        <h3>测试说明</h3>
+                        <ul>
+                            <li>测试包含20道题目</li>
+                            <li>每题限时10秒</li>
+                            <li>测试结束后会显示详细报告</li>
+                            <li>根据表现获得相应积分奖励</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 记忆卡片模式 -->
+            <section id="flashcard-mode" class="mode-section">
+                <div class="mode-header">
+                    <h2>记忆卡片</h2>
+                    <div class="flashcard-controls">
+                        <button class="control-btn" id="shuffle-cards">
+                            <i class="fas fa-shuffle"></i>
+                            洗牌
+                        </button>
+                        <button class="control-btn" id="auto-play">
+                            <i class="fas fa-play"></i>
+                            自动播放
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flashcard-container">
+                    <div class="flashcard" id="flashcard">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <div class="kana-large" id="card-kana">あ</div>
+                            </div>
+                            <div class="flashcard-back">
+                                <div class="romanji" id="card-romanji">a</div>
+                                <div class="meaning" id="card-meaning">元音A</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flashcard-controls-bottom">
+                        <button class="card-btn difficult" id="mark-difficult">
+                            <i class="fas fa-times"></i>
+                            困难
+                        </button>
+                        <button class="card-btn easy" id="mark-easy">
+                            <i class="fas fa-check"></i>
+                            简单
+                        </button>
+                    </div>
+                    
+                    <div class="card-navigation">
+                        <button class="nav-card-btn" id="prev-card">
+                            <i class="fas fa-chevron-left"></i>
+                            上一张
+                        </button>
+                        <span class="card-counter" id="card-counter">1/46</span>
+                        <button class="nav-card-btn" id="next-card">
+                            下一张
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 学习进度 -->
+            <section id="progress-mode" class="mode-section">
+                <div class="mode-header">
+                    <h2>学习进度</h2>
+                    <div class="progress-explanation">
+                        <button class="control-btn" id="show-progress-help">
+                            <i class="fas fa-question-circle"></i>
+                            进度说明
+                        </button>
+                    </div>
+                </div>
+
+                <div class="progress-help" id="progress-help" style="display: none;">
+                    <div class="help-content">
+                        <h3>📊 学习进度记录机制</h3>
+                        <div class="help-section">
+                            <h4>🎯 掌握度计算</h4>
+                            <ul>
+                                <li><strong>未学习</strong>：从未接触过的假名（灰色）</li>
+                                <li><strong>学习中</strong>：点击浏览模式中的假名卡片，或在练习中答对1-2次（黄色）</li>
+                                <li><strong>已掌握</strong>：在练习模式中连续答对3次，或在记忆卡片中标记为"简单"（绿色）</li>
+                                <li><strong>整体掌握度</strong>：已掌握假名数量 ÷ 总假名数量 × 100%</li>
+                                <li><strong>重要</strong>：平假名和片假名分别计算，需要都掌握才算完全掌握该音</li>
+                            </ul>
+                        </div>
+                        <div class="help-section">
+                            <h4>⭐ 积分与等级</h4>
+                            <ul>
+                                <li>练习答对：+5分</li>
+                                <li>连续答对3次（掌握）：+10分</li>
+                                <li>测试奖励：根据准确率获得20-50分</li>
+                                <li>等级提升：每100分升1级</li>
+                            </ul>
+                        </div>
+                        <div class="help-section">
+                            <h4>📈 学习统计</h4>
+                            <ul>
+                                <li><strong>学习天数</strong>：每天首次使用时自动记录</li>
+                                <li><strong>学习时长</strong>：页面活跃时间，每分钟自动记录</li>
+                                <li><strong>准确率</strong>：总正确答题数 ÷ 总答题数 × 100%</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-content">
+                    <div class="progress-overview">
+                        <div class="progress-card">
+                            <h3>整体进度</h3>
+                            <div class="progress-circle">
+                                <div class="progress-value" id="overall-progress">0%</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-stats">
+                            <div class="stat-card">
+                                <i class="fas fa-calendar-day"></i>
+                                <div>
+                                    <span class="stat-number" id="days-studied">0</span>
+                                    <span class="stat-label">学习天数</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <span class="stat-number" id="time-studied">0</span>
+                                    <span class="stat-label">学习时长(分钟)</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-bullseye"></i>
+                                <div>
+                                    <span class="stat-number" id="accuracy-overall">0%</span>
+                                    <span class="stat-label">整体准确率</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <span class="stat-number" id="mastered-count">0</span>
+                                    <span class="stat-label">已掌握假名</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="script-progress">
+                        <div class="script-card">
+                            <h3>平假名进度</h3>
+                            <div class="script-stats">
+                                <div class="script-progress-bar">
+                                    <div class="script-progress-fill" id="hiragana-progress-fill"></div>
+                                </div>
+                                <span id="hiragana-progress-text">0/46</span>
+                            </div>
+                        </div>
+                        <div class="script-card">
+                            <h3>片假名进度</h3>
+                            <div class="script-stats">
+                                <div class="script-progress-bar">
+                                    <div class="script-progress-fill" id="katakana-progress-fill"></div>
+                                </div>
+                                <span id="katakana-progress-text">0/46</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-details">
+                        <h3>各行掌握情况</h3>
+                        <div class="row-progress" id="row-progress">
+                            <!-- 各行进度将通过JavaScript生成 -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 设置页面 -->
+            <section id="settings-mode" class="mode-section">
+                <div class="mode-header">
+                    <h2>设置</h2>
+                </div>
+                
+                <div class="settings-content">
+
+                    
+                    <div class="settings-group">
+                        <h3>学习设置</h3>
+                        <div class="setting-item">
+                            <label for="default-script">默认文字</label>
+                            <select id="default-script">
+                                <option value="hiragana">平假名</option>
+                                <option value="katakana">片假名</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="practice-count">每次练习题数</label>
+                            <select id="practice-count">
+                                <option value="10">10题</option>
+                                <option value="20" selected>20题</option>
+                                <option value="30">30题</option>
+                                <option value="50">50题</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>数据管理</h3>
+                        <div class="setting-item">
+                            <button class="settings-btn" id="export-json">导出JSON数据</button>
+                            <button class="settings-btn" id="export-html">导出HTML报告</button>
+                            <button class="settings-btn" id="import-data">导入JSON数据</button>
+                        </div>
+                        <div class="setting-item">
+                            <button class="settings-btn danger" id="reset-progress">重置学习进度</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+
+    
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
