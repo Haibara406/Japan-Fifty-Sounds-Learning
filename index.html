@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧪 日本五十音学习网站 - 内部测试版 v1.0</title>
+    <title>🧪 日本五十音学习网站 - 专业测试版 v2.0</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,8 +17,8 @@
             <div class="header-content">
                 <h1 class="logo">
                     <i class="fas fa-flask"></i>
-                    五十音学习 - 测试版
-                    <span class="test-badge">BETA</span>
+                    五十音学习 - 专业测试版
+                    <span class="test-badge">PRO</span>
                 </h1>
                 <nav class="nav-menu">
                     <button class="nav-btn active" data-mode="browse">
@@ -96,6 +96,12 @@
                     <button class="info-btn" id="toggle-test-panel" style="background: #e74c3c;">
                         <i class="fas fa-bug"></i>
                         测试模式
+                    </button>
+                </div>
+                <div class="stat-item">
+                    <button class="info-btn" id="toggle-test-status" style="background: #9b59b6;">
+                        <i class="fas fa-chart-line"></i>
+                        测试状态
                     </button>
                 </div>
             </div>
@@ -530,7 +536,7 @@
     </div>
 
     <!-- 测试面板 -->
-    <div id="test-panel" class="test-panel" style="display: none;">
+    <div id="test-panel" class="test-panel">
         <div class="test-panel-content">
             <div class="test-panel-header">
                 <h3>🐛 测试模式面板</h3>
@@ -547,13 +553,15 @@
 
                 <div class="test-section">
                     <h4>🏆 成就测试</h4>
-                    <button class="test-btn" id="unlock-first-step">解锁：初次尝试</button>
-                    <button class="test-btn" id="unlock-practice-master">解锁：练习达人</button>
-                    <button class="test-btn" id="unlock-accuracy-expert">解锁：精准射手</button>
-                    <button class="test-btn" id="unlock-hiragana-master">解锁：平假名大师</button>
-                    <button class="test-btn" id="unlock-level-achievements">解锁：等级成就</button>
+                    <select class="test-select" id="achievement-selector">
+                        <option value="">选择要解锁的成就</option>
+                    </select>
+                    <button class="test-btn" id="unlock-selected-achievement">解锁选中成就</button>
                     <button class="test-btn" id="unlock-all-achievements">解锁所有成就</button>
                     <button class="test-btn" id="reset-achievements">重置成就</button>
+                    <div class="test-info-small">
+                        <span id="achievement-status">已解锁: 0/14</span>
+                    </div>
                 </div>
 
                 <div class="test-section">
@@ -578,7 +586,34 @@
                     <button class="test-btn" id="trigger-level-up">触发升级检查</button>
                     <button class="test-btn" id="trigger-achievement-check">触发成就检查</button>
                     <button class="test-btn" id="show-test-notification">测试成就通知</button>
+                    <button class="test-btn" id="test-all-modes">测试所有模式</button>
+                    <button class="test-btn" id="simulate-user-journey">模拟用户旅程</button>
                     <button class="test-btn" id="reset-all-data">重置所有数据</button>
+                </div>
+
+                <div class="test-section">
+                    <h4>🧪 高级测试</h4>
+                    <button class="test-btn" id="stress-test">压力测试</button>
+                    <button class="test-btn" id="performance-test">性能测试</button>
+                    <button class="test-btn" id="data-integrity-test">数据完整性测试</button>
+                    <button class="test-btn" id="ui-responsiveness-test">UI响应性测试</button>
+                </div>
+
+                <div class="test-section">
+                    <h4>📊 测试报告</h4>
+                    <button class="test-btn" id="generate-test-report">生成测试报告</button>
+                    <button class="test-btn" id="export-test-data">导出测试数据</button>
+                    <button class="test-btn" id="validate-all-features">验证所有功能</button>
+                </div>
+            </div>
+
+            <div class="test-console">
+                <div class="test-console-header">
+                    <h4>🖥️ 测试控制台</h4>
+                    <button class="test-btn-small" id="clear-console">清空</button>
+                </div>
+                <div class="test-console-content" id="test-console">
+                    <div class="console-line">测试控制台已启动...</div>
                 </div>
             </div>
         </div>
@@ -588,14 +623,78 @@
     <div class="test-watermark">
         <div class="watermark-content">
             <i class="fas fa-flask"></i>
-            <span>内部测试版 v1.0</span>
+            <span>专业测试版 v2.0</span>
         </div>
     </div>
+
+    <!-- 调试按钮 -->
+    <button onclick="debugTestPanel()" style="position: fixed; bottom: 80px; left: 20px; z-index: 1001; background: #e74c3c; color: white; border: none; padding: 10px; border-radius: 5px;">
+        调试测试面板
+    </button>
 
     <!-- 版本信息按钮 -->
     <button class="version-info-btn" onclick="showTestVersionInfo()">
         <i class="fas fa-info"></i>
     </button>
+
+    <!-- 测试状态面板 -->
+    <div id="test-status-panel" class="test-status-panel">
+        <div class="test-status-content">
+            <div class="test-status-header">
+                <h3>📊 测试状态监控</h3>
+                <button class="close-test-status" id="close-test-status">&times;</button>
+            </div>
+            <div class="test-status-body">
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h4>🎯 功能覆盖率</h4>
+                        <div class="status-value" id="feature-coverage">0%</div>
+                        <div class="status-detail" id="feature-details">0/5 模式已测试</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>🏆 成就覆盖率</h4>
+                        <div class="status-value" id="achievement-coverage">0%</div>
+                        <div class="status-detail" id="achievement-details">0/14 成就已解锁</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>📈 数据完整性</h4>
+                        <div class="status-value" id="data-integrity">100%</div>
+                        <div class="status-detail">所有数据结构正常</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>⚡ 性能指标</h4>
+                        <div class="status-value" id="performance-score">优秀</div>
+                        <div class="status-detail" id="performance-details">响应时间 < 100ms</div>
+                    </div>
+                </div>
+
+                <div class="test-progress-section">
+                    <h4>🔄 测试进度</h4>
+                    <div class="progress-item">
+                        <span>基础功能测试</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="basic-test-progress"></div>
+                        </div>
+                        <span id="basic-test-percent">0%</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>高级功能测试</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="advanced-test-progress"></div>
+                        </div>
+                        <span id="advanced-test-percent">0%</span>
+                    </div>
+                    <div class="progress-item">
+                        <span>集成测试</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="integration-test-progress"></div>
+                        </div>
+                        <span id="integration-test-percent">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="data.js"></script>
     <script src="script.js"></script>

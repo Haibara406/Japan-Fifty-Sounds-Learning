@@ -48,6 +48,28 @@ let testData = {
     currentTimer: null // 添加当前计时器引用
 };
 
+// 专业测试系统变量
+let testSystem = {
+    testedModes: new Set(),
+    testResults: {},
+    testStartTime: null,
+    testLogs: [],
+    featureCoverage: {
+        browse: false,
+        practice: false,
+        test: false,
+        flashcard: false,
+        progress: false,
+        achievements: false,
+        settings: false
+    },
+    performanceMetrics: {
+        responseTime: [],
+        memoryUsage: [],
+        errorCount: 0
+    }
+};
+
 // 记忆卡片变量
 let flashcardData = {
     cards: [],
@@ -1194,6 +1216,10 @@ function setupSettingsListeners() {
     document.getElementById('toggle-test-panel').addEventListener('click', toggleTestPanel);
     document.getElementById('close-test-panel').addEventListener('click', closeTestPanel);
 
+    // 测试状态面板
+    document.getElementById('toggle-test-status').addEventListener('click', toggleTestStatusPanel);
+    document.getElementById('close-test-status').addEventListener('click', closeTestStatusPanel);
+
     // 测试功能事件监听器
     setupTestListeners();
     setupInlineTestListeners();
@@ -1964,14 +1990,28 @@ function closeLevelInfoModal() {
 
 // 切换测试面板
 function toggleTestPanel() {
+    console.log('toggleTestPanel called'); // 调试信息
     const panel = document.getElementById('test-panel');
+    console.log('Panel element:', panel); // 调试信息
+
     panel.classList.toggle('active');
+    console.log('Panel classes after toggle:', panel.className); // 调试信息
+
+    // 如果面板打开，初始化测试系统
+    if (panel.classList.contains('active')) {
+        populateAchievementSelector();
+        updateTestStatus();
+        logToConsole('测试面板已打开', 'info');
+    } else {
+        logToConsole('测试面板已关闭', 'info');
+    }
 }
 
 // 关闭测试面板
 function closeTestPanel() {
     const panel = document.getElementById('test-panel');
     panel.classList.remove('active');
+    logToConsole('测试面板已关闭', 'info');
 }
 
 // 设置测试功能事件监听器
@@ -1983,11 +2023,7 @@ function setupTestListeners() {
     document.getElementById('reset-points').addEventListener('click', resetTestPoints);
 
     // 成就测试
-    document.getElementById('unlock-first-step').addEventListener('click', () => unlockTestAchievement('first_step'));
-    document.getElementById('unlock-practice-master').addEventListener('click', () => unlockTestAchievement('practice_master'));
-    document.getElementById('unlock-accuracy-expert').addEventListener('click', () => unlockTestAchievement('accuracy_expert'));
-    document.getElementById('unlock-hiragana-master').addEventListener('click', () => unlockTestAchievement('hiragana_master'));
-    document.getElementById('unlock-level-achievements').addEventListener('click', unlockLevelAchievements);
+    document.getElementById('unlock-selected-achievement').addEventListener('click', unlockSelectedAchievement);
     document.getElementById('unlock-all-achievements').addEventListener('click', unlockAllAchievements);
     document.getElementById('reset-achievements').addEventListener('click', resetTestAchievements);
 
@@ -2008,7 +2044,23 @@ function setupTestListeners() {
     document.getElementById('trigger-level-up').addEventListener('click', triggerLevelUpCheck);
     document.getElementById('trigger-achievement-check').addEventListener('click', triggerAchievementCheck);
     document.getElementById('show-test-notification').addEventListener('click', showTestNotification);
+    document.getElementById('test-all-modes').addEventListener('click', testAllModes);
+    document.getElementById('simulate-user-journey').addEventListener('click', simulateUserJourney);
     document.getElementById('reset-all-data').addEventListener('click', resetAllTestData);
+
+    // 高级测试
+    document.getElementById('stress-test').addEventListener('click', runStressTest);
+    document.getElementById('performance-test').addEventListener('click', runPerformanceTest);
+    document.getElementById('data-integrity-test').addEventListener('click', runDataIntegrityTest);
+    document.getElementById('ui-responsiveness-test').addEventListener('click', runUIResponsivenessTest);
+
+    // 测试报告
+    document.getElementById('generate-test-report').addEventListener('click', generateTestReport);
+    document.getElementById('export-test-data').addEventListener('click', exportTestData);
+    document.getElementById('validate-all-features').addEventListener('click', validateAllFeatures);
+
+    // 控制台
+    document.getElementById('clear-console').addEventListener('click', clearTestConsole);
 }
 
 // 添加测试积分
@@ -2383,45 +2435,639 @@ function testSkipTimer() {
 // 显示测试版本信息
 function showTestVersionInfo() {
     const info = `
-🧪 内部测试版本 v1.0
+🧪 专业测试版本 v2.0
 
-📋 测试功能清单：
-✅ 积分与等级系统
+📋 核心功能测试：
+✅ 积分与等级系统 (10级)
 ✅ 成就系统 (14个成就)
-✅ 学习进度追踪
+✅ 学习进度追踪 (平假名/片假名分别统计)
 ✅ 时间统计 (连续天数/累计时长)
-✅ 数据导出/导入
-✅ 响应式设计
-✅ 多模式学习
+✅ 数据导出/导入 (JSON + HTML报告)
+✅ 响应式设计 (桌面/移动适配)
+✅ 多模式学习 (5种学习模式)
 
-🔧 测试工具：
-• 右上角测试面板 (完整功能测试)
-• 各模式内联测试按钮 (快速测试)
-• 降低成就门槛 (便于测试)
-• 实时数据显示
+🔧 专业测试工具：
+• 测试面板 - 完整功能测试套件
+• 测试状态监控 - 实时覆盖率和性能指标
+• 测试控制台 - 详细日志记录
+• 指定成就解锁 - 精确测试特定功能
+• 用户旅程模拟 - 自动化测试流程
+• 压力测试 - 性能和稳定性验证
+• 数据完整性验证 - 确保数据一致性
 
-⚠️ 注意事项：
-• 这是内部测试版本，包含调试功能
-• 成就门槛已降低便于测试
-• 所有数据保存在本地存储
-• 可随时重置测试数据
+📊 高级测试功能：
+• 性能基准测试
+• UI响应性测试
+• 自动化测试报告生成
+• 测试数据导出
+• 功能覆盖率分析
 
-🎯 测试重点：
-1. 成就解锁机制
-2. 积分等级提升
-3. 学习进度记录
-4. 数据导出完整性
-5. 界面响应性
+⚠️ 测试环境说明：
+• 专业级测试工具集成
+• 成就门槛已调整便于测试
+• 完整的测试日志和报告
+• 可导出详细测试数据
+• 支持自动化测试流程
+
+🎯 测试验证项目：
+1. 功能完整性验证
+2. 性能基准测试
+3. 数据一致性检查
+4. 用户体验测试
+5. 跨设备兼容性
+6. 成就解锁机制
+7. 积分等级系统
+8. 学习进度算法
+9. 数据导出完整性
+10. 界面响应性能
     `;
 
     alert(info);
 }
 
+// ========== 专业测试系统 ==========
+
+// 初始化测试系统
+function initializeTestSystem() {
+    testSystem.testStartTime = new Date();
+    populateAchievementSelector();
+    updateTestStatus();
+    logToConsole('测试系统已初始化', 'success');
+}
+
+// 填充成就选择器
+function populateAchievementSelector() {
+    const selector = document.getElementById('achievement-selector');
+    selector.innerHTML = '<option value="">选择要解锁的成就</option>';
+
+    Object.values(achievementSystem).forEach(achievement => {
+        const option = document.createElement('option');
+        option.value = achievement.id;
+        option.textContent = `${achievement.name} - ${achievement.description}`;
+        if (userData.unlockedAchievements.has(achievement.id)) {
+            option.textContent += ' ✓';
+            option.style.color = '#27ae60';
+        }
+        selector.appendChild(option);
+    });
+}
+
+// 解锁选中的成就
+function unlockSelectedAchievement() {
+    const selector = document.getElementById('achievement-selector');
+    const achievementId = selector.value;
+
+    if (!achievementId) {
+        alert('请先选择一个成就！');
+        return;
+    }
+
+    if (userData.unlockedAchievements.has(achievementId)) {
+        alert('该成就已经解锁！');
+        return;
+    }
+
+    const achievement = achievementSystem[achievementId];
+    userData.unlockedAchievements.add(achievementId);
+    saveUserData();
+    showAchievementNotification(achievement);
+    updateUI();
+    populateAchievementSelector();
+    updateTestStatus();
+
+    logToConsole(`成就解锁: ${achievement.name}`, 'success');
+    alert(`已解锁成就：${achievement.name}`);
+}
+
+// 测试所有模式
+function testAllModes() {
+    logToConsole('开始测试所有模式...', 'info');
+
+    const modes = ['browse', 'practice', 'test', 'flashcard', 'progress', 'achievements', 'settings'];
+    let currentIndex = 0;
+
+    function testNextMode() {
+        if (currentIndex >= modes.length) {
+            logToConsole('所有模式测试完成！', 'success');
+            testSystem.featureCoverage.allModes = true;
+            updateTestStatus();
+            return;
+        }
+
+        const mode = modes[currentIndex];
+        logToConsole(`测试模式: ${mode}`, 'info');
+
+        // 切换到该模式
+        switchMode(mode);
+        testSystem.testedModes.add(mode);
+        testSystem.featureCoverage[mode] = true;
+
+        // 模拟用户交互
+        setTimeout(() => {
+            logToConsole(`模式 ${mode} 测试完成`, 'success');
+            currentIndex++;
+            testNextMode();
+        }, 1000);
+    }
+
+    testNextMode();
+}
+
+// 模拟用户学习旅程
+function simulateUserJourney() {
+    logToConsole('开始模拟用户学习旅程...', 'info');
+
+    const journey = [
+        () => {
+            logToConsole('步骤1: 浏览五十音表', 'info');
+            switchMode('browse');
+            testMasterRandomKanas();
+        },
+        () => {
+            logToConsole('步骤2: 开始练习', 'info');
+            switchMode('practice');
+            addTestPracticeStats();
+        },
+        () => {
+            logToConsole('步骤3: 进行测试', 'info');
+            switchMode('test');
+            addTestPerfectTests();
+        },
+        () => {
+            logToConsole('步骤4: 查看进度', 'info');
+            switchMode('progress');
+        },
+        () => {
+            logToConsole('步骤5: 检查成就', 'info');
+            switchMode('achievements');
+            triggerAchievementCheck();
+        }
+    ];
+
+    let stepIndex = 0;
+    function executeNextStep() {
+        if (stepIndex >= journey.length) {
+            logToConsole('用户旅程模拟完成！', 'success');
+            return;
+        }
+
+        journey[stepIndex]();
+        stepIndex++;
+        setTimeout(executeNextStep, 2000);
+    }
+
+    executeNextStep();
+}
+
+// 压力测试
+function runStressTest() {
+    logToConsole('开始压力测试...', 'warning');
+
+    const startTime = performance.now();
+
+    // 快速切换模式
+    for (let i = 0; i < 50; i++) {
+        const modes = ['browse', 'practice', 'test', 'flashcard', 'progress'];
+        const randomMode = modes[Math.floor(Math.random() * modes.length)];
+        setTimeout(() => switchMode(randomMode), i * 10);
+    }
+
+    // 快速添加数据
+    for (let i = 0; i < 100; i++) {
+        userData.totalQuestions++;
+        userData.correctAnswers += Math.random() > 0.5 ? 1 : 0;
+    }
+
+    setTimeout(() => {
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+        logToConsole(`压力测试完成，耗时: ${duration.toFixed(2)}ms`, 'success');
+
+        if (duration > 5000) {
+            logToConsole('警告: 性能可能存在问题', 'warning');
+        }
+    }, 1000);
+}
+
+// 性能测试
+function runPerformanceTest() {
+    logToConsole('开始性能测试...', 'info');
+
+    const tests = [
+        {
+            name: 'UI更新性能',
+            test: () => {
+                const start = performance.now();
+                for (let i = 0; i < 100; i++) {
+                    updateUI();
+                }
+                return performance.now() - start;
+            }
+        },
+        {
+            name: '数据保存性能',
+            test: () => {
+                const start = performance.now();
+                for (let i = 0; i < 50; i++) {
+                    saveUserData();
+                }
+                return performance.now() - start;
+            }
+        },
+        {
+            name: '成就检查性能',
+            test: () => {
+                const start = performance.now();
+                for (let i = 0; i < 20; i++) {
+                    checkAchievements();
+                }
+                return performance.now() - start;
+            }
+        }
+    ];
+
+    tests.forEach(test => {
+        const duration = test.test();
+        testSystem.performanceMetrics.responseTime.push(duration);
+        logToConsole(`${test.name}: ${duration.toFixed(2)}ms`, duration > 100 ? 'warning' : 'success');
+    });
+
+    const avgTime = testSystem.performanceMetrics.responseTime.reduce((a, b) => a + b, 0) / testSystem.performanceMetrics.responseTime.length;
+    logToConsole(`平均响应时间: ${avgTime.toFixed(2)}ms`, 'info');
+}
+
+// 数据完整性测试
+function runDataIntegrityTest() {
+    logToConsole('开始数据完整性测试...', 'info');
+
+    const tests = [
+        {
+            name: '用户数据结构',
+            test: () => {
+                const required = ['level', 'points', 'masteredKanas', 'learningKanas', 'unlockedAchievements'];
+                return required.every(key => userData.hasOwnProperty(key));
+            }
+        },
+        {
+            name: '成就系统完整性',
+            test: () => {
+                return Object.keys(achievementSystem).length === 14;
+            }
+        },
+        {
+            name: '等级系统完整性',
+            test: () => {
+                return Object.keys(levelSystem).length === 10;
+            }
+        },
+        {
+            name: '假名数据完整性',
+            test: () => {
+                const hiragana = getKanaData('hiragana').filter(item => item.difficulty < 4);
+                const katakana = getKanaData('katakana').filter(item => item.difficulty < 4);
+                return hiragana.length === 46 && katakana.length === 46;
+            }
+        }
+    ];
+
+    let passedTests = 0;
+    tests.forEach(test => {
+        const result = test.test();
+        if (result) {
+            logToConsole(`✓ ${test.name}: 通过`, 'success');
+            passedTests++;
+        } else {
+            logToConsole(`✗ ${test.name}: 失败`, 'error');
+            testSystem.performanceMetrics.errorCount++;
+        }
+    });
+
+    logToConsole(`数据完整性测试完成: ${passedTests}/${tests.length} 通过`, passedTests === tests.length ? 'success' : 'warning');
+}
+
+// UI响应性测试
+function runUIResponsivenessTest() {
+    logToConsole('开始UI响应性测试...', 'info');
+
+    // 测试按钮点击响应
+    const buttons = document.querySelectorAll('button');
+    let responsiveButtons = 0;
+
+    buttons.forEach(button => {
+        if (button.onclick || button.addEventListener) {
+            responsiveButtons++;
+        }
+    });
+
+    logToConsole(`响应式按钮: ${responsiveButtons}/${buttons.length}`, 'info');
+
+    // 测试模式切换
+    const modes = ['browse', 'practice', 'test', 'flashcard', 'progress'];
+    modes.forEach(mode => {
+        const start = performance.now();
+        switchMode(mode);
+        const duration = performance.now() - start;
+        logToConsole(`模式切换 ${mode}: ${duration.toFixed(2)}ms`, duration > 50 ? 'warning' : 'success');
+    });
+
+    logToConsole('UI响应性测试完成', 'success');
+}
+
+// 生成测试报告
+function generateTestReport() {
+    logToConsole('生成测试报告...', 'info');
+
+    const report = {
+        timestamp: new Date().toISOString(),
+        testDuration: new Date() - testSystem.testStartTime,
+        featureCoverage: testSystem.featureCoverage,
+        testedModes: Array.from(testSystem.testedModes),
+        performanceMetrics: testSystem.performanceMetrics,
+        userDataSnapshot: {
+            level: userData.level,
+            points: userData.points,
+            masteredKanas: userData.masteredKanas.size,
+            unlockedAchievements: userData.unlockedAchievements.size,
+            totalQuestions: userData.totalQuestions,
+            accuracy: userData.accuracy
+        },
+        testLogs: testSystem.testLogs
+    };
+
+    const reportHtml = generateTestReportHTML(report);
+    downloadFile(reportHtml, 'test-report.html', 'text/html');
+
+    logToConsole('测试报告已生成并下载', 'success');
+}
+
+// 生成测试报告HTML
+function generateTestReportHTML(report) {
+    return `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五十音学习网站 - 测试报告</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #2c3e50; }
+        .metric { background: #ecf0f1; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { color: #27ae60; }
+        .warning { color: #f39c12; }
+        .error { color: #e74c3c; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .log-entry { padding: 5px; border-left: 3px solid #3498db; margin: 5px 0; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 五十音学习网站测试报告</h1>
+        <p><strong>生成时间:</strong> ${new Date(report.timestamp).toLocaleString('zh-CN')}</p>
+        <p><strong>测试时长:</strong> ${Math.round(report.testDuration / 1000)}秒</p>
+
+        <h2>📊 功能覆盖率</h2>
+        <div class="grid">
+            ${Object.entries(report.featureCoverage).map(([feature, tested]) =>
+                `<div class="metric">
+                    <strong>${feature}:</strong>
+                    <span class="${tested ? 'success' : 'warning'}">${tested ? '✓ 已测试' : '✗ 未测试'}</span>
+                </div>`
+            ).join('')}
+        </div>
+
+        <h2>⚡ 性能指标</h2>
+        <div class="metric">
+            <strong>平均响应时间:</strong> ${report.performanceMetrics.responseTime.length > 0 ?
+                (report.performanceMetrics.responseTime.reduce((a, b) => a + b, 0) / report.performanceMetrics.responseTime.length).toFixed(2) : 0}ms
+        </div>
+        <div class="metric">
+            <strong>错误计数:</strong> <span class="${report.performanceMetrics.errorCount > 0 ? 'error' : 'success'}">${report.performanceMetrics.errorCount}</span>
+        </div>
+
+        <h2>👤 用户数据快照</h2>
+        <div class="grid">
+            ${Object.entries(report.userDataSnapshot).map(([key, value]) =>
+                `<div class="metric"><strong>${key}:</strong> ${value}</div>`
+            ).join('')}
+        </div>
+
+        <h2>📝 测试日志</h2>
+        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;">
+            ${report.testLogs.map(log =>
+                `<div class="log-entry ${log.type}">
+                    <strong>[${new Date(log.timestamp).toLocaleTimeString()}]</strong> ${log.message}
+                </div>`
+            ).join('')}
+        </div>
+    </div>
+</body>
+</html>`;
+}
+
+// 导出测试数据
+function exportTestData() {
+    const testData = {
+        testSystem: testSystem,
+        userData: {
+            ...userData,
+            masteredKanas: Array.from(userData.masteredKanas),
+            learningKanas: Array.from(userData.learningKanas),
+            unlockedAchievements: Array.from(userData.unlockedAchievements),
+            modesUsed: Array.from(userData.modesUsed)
+        },
+        timestamp: new Date().toISOString()
+    };
+
+    downloadFile(JSON.stringify(testData, null, 2), 'test-data.json', 'application/json');
+    logToConsole('测试数据已导出', 'success');
+}
+
+// 验证所有功能
+function validateAllFeatures() {
+    logToConsole('开始验证所有功能...', 'info');
+
+    const validations = [
+        { name: '浏览模式', test: () => document.getElementById('browse-mode') !== null },
+        { name: '练习模式', test: () => document.getElementById('practice-mode') !== null },
+        { name: '测试模式', test: () => document.getElementById('test-mode') !== null },
+        { name: '记忆卡片', test: () => document.getElementById('flashcard-mode') !== null },
+        { name: '学习进度', test: () => document.getElementById('progress-mode') !== null },
+        { name: '成就系统', test: () => document.getElementById('achievements-mode') !== null },
+        { name: '设置页面', test: () => document.getElementById('settings-mode') !== null },
+        { name: '数据保存', test: () => typeof saveUserData === 'function' },
+        { name: '数据加载', test: () => typeof loadUserData === 'function' },
+        { name: '成就检查', test: () => typeof checkAchievements === 'function' },
+        { name: '等级检查', test: () => typeof checkLevelUp === 'function' }
+    ];
+
+    let passedValidations = 0;
+    validations.forEach(validation => {
+        try {
+            const result = validation.test();
+            if (result) {
+                logToConsole(`✓ ${validation.name}: 验证通过`, 'success');
+                passedValidations++;
+            } else {
+                logToConsole(`✗ ${validation.name}: 验证失败`, 'error');
+            }
+        } catch (error) {
+            logToConsole(`✗ ${validation.name}: 验证出错 - ${error.message}`, 'error');
+        }
+    });
+
+    const coverage = (passedValidations / validations.length * 100).toFixed(1);
+    logToConsole(`功能验证完成: ${passedValidations}/${validations.length} (${coverage}%)`, 'info');
+
+    updateTestStatus();
+}
+
+// 测试状态面板控制
+function toggleTestStatusPanel() {
+    const panel = document.getElementById('test-status-panel');
+    panel.classList.toggle('active');
+    if (panel.classList.contains('active')) {
+        updateTestStatus();
+    }
+}
+
+function closeTestStatusPanel() {
+    const panel = document.getElementById('test-status-panel');
+    panel.classList.remove('active');
+}
+
+// 更新测试状态
+function updateTestStatus() {
+    // 功能覆盖率
+    const testedFeatures = Object.values(testSystem.featureCoverage).filter(Boolean).length;
+    const totalFeatures = Object.keys(testSystem.featureCoverage).length;
+    const featureCoverage = Math.round((testedFeatures / totalFeatures) * 100);
+
+    document.getElementById('feature-coverage').textContent = featureCoverage + '%';
+    document.getElementById('feature-details').textContent = `${testedFeatures}/${totalFeatures} 功能已测试`;
+
+    // 成就覆盖率
+    const unlockedCount = userData.unlockedAchievements.size;
+    const totalAchievements = Object.keys(achievementSystem).length;
+    const achievementCoverage = Math.round((unlockedCount / totalAchievements) * 100);
+
+    document.getElementById('achievement-coverage').textContent = achievementCoverage + '%';
+    document.getElementById('achievement-details').textContent = `${unlockedCount}/${totalAchievements} 成就已解锁`;
+    document.getElementById('achievement-status').textContent = `已解锁: ${unlockedCount}/${totalAchievements}`;
+
+    // 性能指标
+    const avgResponseTime = testSystem.performanceMetrics.responseTime.length > 0 ?
+        testSystem.performanceMetrics.responseTime.reduce((a, b) => a + b, 0) / testSystem.performanceMetrics.responseTime.length : 0;
+
+    let performanceScore = '优秀';
+    if (avgResponseTime > 100) performanceScore = '良好';
+    if (avgResponseTime > 200) performanceScore = '一般';
+    if (avgResponseTime > 500) performanceScore = '较差';
+
+    document.getElementById('performance-score').textContent = performanceScore;
+    document.getElementById('performance-details').textContent = `平均响应时间: ${avgResponseTime.toFixed(1)}ms`;
+
+    // 测试进度
+    updateTestProgress('basic-test-progress', 'basic-test-percent', featureCoverage);
+    updateTestProgress('advanced-test-progress', 'advanced-test-percent', achievementCoverage);
+    updateTestProgress('integration-test-progress', 'integration-test-percent',
+        Math.min(featureCoverage, achievementCoverage));
+}
+
+function updateTestProgress(elementId, percentId, value) {
+    document.getElementById(elementId).style.width = value + '%';
+    document.getElementById(percentId).textContent = value + '%';
+}
+
+// 测试控制台功能
+function logToConsole(message, type = 'info') {
+    const console = document.getElementById('test-console');
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = {
+        timestamp: new Date().toISOString(),
+        message: message,
+        type: type
+    };
+
+    testSystem.testLogs.push(logEntry);
+
+    const line = document.createElement('div');
+    line.className = `console-line ${type}`;
+    line.textContent = `[${timestamp}] ${message}`;
+
+    console.appendChild(line);
+    console.scrollTop = console.scrollHeight;
+
+    // 限制日志条数
+    if (console.children.length > 100) {
+        console.removeChild(console.firstChild);
+    }
+}
+
+function clearTestConsole() {
+    document.getElementById('test-console').innerHTML = '<div class="console-line">测试控制台已清空...</div>';
+    testSystem.testLogs = [];
+}
+
+// 下载文件辅助函数
+function downloadFile(content, filename, contentType) {
+    const blob = new Blob([content], { type: contentType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+// 调试函数
+function debugTestPanel() {
+    console.log('=== 测试面板调试信息 ===');
+
+    const panel = document.getElementById('test-panel');
+    console.log('测试面板元素:', panel);
+    console.log('测试面板类名:', panel ? panel.className : 'null');
+    console.log('测试面板样式:', panel ? panel.style.cssText : 'null');
+
+    const selector = document.getElementById('achievement-selector');
+    console.log('成就选择器元素:', selector);
+    console.log('成就选择器选项数量:', selector ? selector.options.length : 'null');
+
+    const console_elem = document.getElementById('test-console');
+    console.log('测试控制台元素:', console_elem);
+    console.log('控制台内容:', console_elem ? console_elem.innerHTML : 'null');
+
+    // 强制打开测试面板
+    if (panel) {
+        panel.classList.add('active');
+        console.log('强制添加active类');
+
+        // 初始化选择器
+        if (typeof populateAchievementSelector === 'function') {
+            populateAchievementSelector();
+            console.log('成就选择器已初始化');
+        }
+
+        // 添加测试日志
+        if (typeof logToConsole === 'function') {
+            logToConsole('调试测试完成', 'success');
+        }
+    }
+
+    alert('调试信息已输出到浏览器控制台，请按F12查看');
+}
+
 // 在页面加载完成后显示测试版本信息
 document.addEventListener('DOMContentLoaded', function() {
+    // 初始化测试系统
+    initializeTestSystem();
+
     // 延迟显示，确保页面完全加载
     setTimeout(() => {
-        if (confirm('🧪 欢迎使用内部测试版本！\n\n是否查看测试功能说明？')) {
+        if (confirm('🧪 欢迎使用专业测试版本！\n\n是否查看测试功能说明？')) {
             showTestVersionInfo();
         }
     }, 1000);

@@ -2038,3 +2038,209 @@ body {
 .test-panel::-webkit-scrollbar-thumb:hover {
     background: var(--secondary-color);
 }
+
+/* 测试选择器样式 */
+.test-select {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.8rem;
+    margin: var(--spacing-xs);
+    width: calc(100% - var(--spacing-md));
+}
+
+.test-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.test-info-small {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: var(--spacing-xs);
+    padding: var(--spacing-xs);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+}
+
+/* 测试控制台样式 */
+.test-console {
+    margin-top: var(--spacing-lg);
+    border-top: 1px solid var(--bg-tertiary);
+    padding-top: var(--spacing-lg);
+}
+
+.test-console-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.test-console-header h4 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+.test-console-content {
+    background: #1a1a1a;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--bg-tertiary);
+}
+
+.console-line {
+    margin-bottom: 2px;
+    line-height: 1.2;
+}
+
+.console-line.success {
+    color: #00ff00;
+}
+
+.console-line.error {
+    color: #ff4444;
+}
+
+.console-line.warning {
+    color: #ffaa00;
+}
+
+.console-line.info {
+    color: #00aaff;
+}
+
+/* 测试状态面板样式 */
+.test-status-panel {
+    position: fixed;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 800px;
+    background: var(--bg-primary);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    z-index: 1003;
+    transition: top 0.3s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.test-status-panel.active {
+    top: 10%;
+}
+
+.test-status-content {
+    padding: var(--spacing-lg);
+}
+
+.test-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.test-status-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+}
+
+.close-test-status {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+}
+
+.close-test-status:hover {
+    color: var(--danger-color);
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.status-card {
+    background: var(--bg-secondary);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    border: 1px solid var(--bg-tertiary);
+}
+
+.status-card h4 {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.status-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--success-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+.status-detail {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.test-progress-section h4 {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+}
+
+.progress-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.progress-item span:first-child {
+    min-width: 120px;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+}
+
+.progress-item span:last-child {
+    min-width: 40px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
